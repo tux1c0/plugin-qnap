@@ -19,13 +19,31 @@
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
-class template extends eqLogic {
+class QNAP extends eqLogic {
     /*     * *************************Attributs****************************** */
 
 
 
     /*     * ***********************Methode static*************************** */
+	public static function dependancy_info() {
+		$return = array();
+		$return['log'] = 'QNAP_dependancy';
+		$cmd = "dpkg -l | grep php-ssh2";
+		exec($cmd, $output, $return_var);
+		if ($output[0] != "") {
+		  $return['state'] = 'ok';
+		} else {
+		  $return['state'] = 'nok';
+		}
+		return $return;
+	}
 
+	public static function dependancy_install() {
+		log::remove('QNAP_update');
+		$cmd = 'sudo /bin/bash ' . dirname(__FILE__) . '/../../resources/install.sh';
+		$cmd .= ' >> ' . log::getPathToLog('QNAP_dependancy') . ' 2>&1 &';
+		exec($cmd);
+	}
     /*
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
       public static function cron() {
@@ -106,7 +124,7 @@ class template extends eqLogic {
     /*     * **********************Getteur Setteur*************************** */
 }
 
-class templateCmd extends cmd {
+class QNAPCmd extends cmd {
     /*     * *************************Attributs****************************** */
 
 
