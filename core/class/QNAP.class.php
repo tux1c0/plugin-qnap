@@ -28,9 +28,9 @@ class QNAP extends eqLogic {
 	public static function dependancy_info() {
 		$return = array();
 		$return['log'] = 'QNAP_dependancy';
-		$cmd = "dpkg -l | grep php-ssh2";
+		$cmd = "php -m | grep ssh2 | wc -l";
 		exec($cmd, $output, $return_var);
-		if ($output[0] != "") {
+		if ($output[0] != 0) {
 		  $return['state'] = 'ok';
 		} else {
 		  $return['state'] = 'nok';
@@ -101,7 +101,70 @@ class QNAP extends eqLogic {
     public function postRemove() {
         
     }
+	
+	public function getInformations() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('IPaddress');
+		$login = $this->getConfiguration('SSHlogin');
+		$pwd = $this->getConfiguration('SSHpwd');
+		$NAS = $this->getName();
+		
+		// var
+		$SSH = '';
+		$infos = array(
+			'cpu' 	=> '',
+			'ram' 	=> '',
+			'os' 	=> ''
+		);
 
+		// commands
+		$cmdCPU = '';
+		$cmdRAM = '';
+		$cmdOS = '';
+
+		// SSH connection & launch commands
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+			$infos['cpu'] = $this->execSSH($cmdCPU, $SSH);
+			
+		}
+		
+		$this->updateInfo('cpu', $infos['cpu']);
+    
+  }
+
+	// execute SSH command
+	private function execSSH($cmd, $ssh) {
+		$cmdOutput = ssh2_exec($ssh, $cmd);
+		stream_set_blocking($cmdOutput, true);
+		$output = stream_get_contents($cmdOutput);
+		
+		$return $output;
+	}
+	
+	// establish SSH
+	private function startSSH($ip, $name, $user, $pass) {
+		// SSH connection
+		if (!$this->SSH = ssh2_connect($ip, 22)) {
+			log::add('QNAP', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
+			return 1;
+		}else{
+			// SSH authentication
+			if (!ssh2_auth_password($connection, $user, $pass)){
+				log::add('QNAP', 'error', 'Mauvais login/password pour '.$name);
+				return 1;
+			}else{
+				return 0;
+			}
+		}	
+	}
+	
+	// display
+	private function updateInfo($objHtml, $info) {
+		$obj = $this->getCmd(null, $objHtml);
+		if(is_object($obj)){
+			$obj->event($info);
+		}
+	}
     /*
      * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
       public function toHtml($_version = 'dashboard') {
