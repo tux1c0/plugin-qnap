@@ -18,17 +18,10 @@
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
-function qnap_install() {
-    
-}
-
-function qnap_update() {
-    
-}
-
-
-function qnap_remove() {
-    
+function QNAP_update() {
+	foreach (QNAP::byType('QNAP') as $nas) {
+		$nas->save();
+	}    
 }
 
 ?>
