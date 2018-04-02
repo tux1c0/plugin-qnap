@@ -21,7 +21,7 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class QNAP extends eqLogic {
     /*     * *************************Attributs****************************** */
-
+	private $SSH;
 
 
     /*     * ***********************Methode static*************************** */
@@ -110,7 +110,6 @@ class QNAP extends eqLogic {
 		$NAS = $this->getName();
 		
 		// var
-		$SSH = '';
 		$infos = array(
 			'cpu' 	=> '',
 			'ram' 	=> '',
@@ -124,17 +123,20 @@ class QNAP extends eqLogic {
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
-			$infos['cpu'] = $this->execSSH($cmdCPU, $SSH);
+			$infos['cpu'] = $this->execSSH($cmdCPU);
 			
 		}
+		
+		// close SSH
+		$this->disconnect();
 		
 		$this->updateInfo('cpu', $infos['cpu']);
     
   }
 
 	// execute SSH command
-	private function execSSH($cmd, $ssh) {
-		$cmdOutput = ssh2_exec($ssh, $cmd);
+	private function execSSH($cmd) {
+		$cmdOutput = ssh2_exec($this->SSH, $cmd);
 		stream_set_blocking($cmdOutput, true);
 		$output = stream_get_contents($cmdOutput);
 		
@@ -149,7 +151,7 @@ class QNAP extends eqLogic {
 			return 1;
 		}else{
 			// SSH authentication
-			if (!ssh2_auth_password($connection, $user, $pass)){
+			if (!ssh2_auth_password($this->SSH, $user, $pass)){
 				log::add('QNAP', 'error', 'Mauvais login/password pour '.$name);
 				return 1;
 			}else{
@@ -157,6 +159,12 @@ class QNAP extends eqLogic {
 			}
 		}	
 	}
+	
+	// Close SSH connection
+	private function disconnect() {
+        $this->exec('echo "EXITING" && exit;');
+        $this->SSH = null;
+    } 
 	
 	// display
 	private function updateInfo($objHtml, $info) {
