@@ -83,7 +83,21 @@ class QNAP extends eqLogic {
     }
 
     public function postSave() {
-        
+		log::add('QNAP', 'debug', 'postSave');
+        $QNAPCmd = $this->getCmd(null, 'cpu');
+		if (!is_object($QNAPCmd)) {
+			$QNAPCmd = new QNAPCmd();
+			$QNAPCmd->setName(__('CPU', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('cpu');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		foreach (eqLogic::byType('QNAP') as $QNAP) {
+			$QNAP->getInformations();
+		}
     }
 
     public function preUpdate() {
@@ -117,9 +131,9 @@ class QNAP extends eqLogic {
 		);
 
 		// commands
-		$cmdCPU = '';
-		$cmdRAM = '';
-		$cmdOS = '';
+		$cmdCPU = "lscpu | grep '^CPU(s)' | awk '{ print $NF }'";
+		$cmdRAM = "";
+		$cmdOS = "";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
@@ -132,7 +146,7 @@ class QNAP extends eqLogic {
 		
 		$this->updateInfo('cpu', $infos['cpu']);
     
-  }
+	}
 
 	// execute SSH command
 	private function execSSH($cmd) {
@@ -211,11 +225,9 @@ class QNAPCmd extends cmd {
       }
      */
 
-    public function execute($_options = array()) {
+    public function execute($_options = null) {
         
     }
 
     /*     * **********************Getteur Setteur*************************** */
 }
-
-
