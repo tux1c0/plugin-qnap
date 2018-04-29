@@ -19,7 +19,7 @@
 /* * ***************************Includes********************************* */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
-class QNAP extends eqLogic {
+class qnap extends eqLogic {
     /*     * *************************Attributs****************************** */
 	private $SSH;
 
@@ -27,47 +27,21 @@ class QNAP extends eqLogic {
     /*     * ***********************Methode static*************************** */
 	public static function dependancy_info() {
 		$return = array();
-		$return['log'] = 'QNAP_dependancy';
-		$cmd = "php -m | grep ssh2 | wc -l";
-		exec($cmd, $output, $return_var);
-		if ($output[0] != 0) {
-		  $return['state'] = 'ok';
+		$return['progress_file'] = jeedom::getTmpFolder('qnap') . '/dependance';
+		if (exec(system::getCmdSudo() . system::get('cmd_check') . '-E "php5-ssh2" | wc -l') >= 1) {
+			$return['state'] = 'ok';
 		} else {
-		  $return['state'] = 'nok';
+			$return['state'] = 'nok';
 		}
 		return $return;
 	}
-
+	
 	public static function dependancy_install() {
-		log::remove('QNAP_update');
-		$cmd = 'sudo /bin/bash ' . dirname(__FILE__) . '/../../resources/install.sh';
-		$cmd .= ' >> ' . log::getPathToLog('QNAP_dependancy') . ' 2>&1 &';
-		exec($cmd);
+		log::remove(__CLASS__ . '_update');
+		return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . jeedom::getTmpFolder('qnap') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
 	}
-    /*
-     * Fonction exécutée automatiquement toutes les minutes par Jeedom
-      public static function cron() {
 
-      }
-     */
-
-
-    /*
-     * Fonction exécutée automatiquement toutes les heures par Jeedom
-      public static function cronHourly() {
-
-      }
-     */
-
-    /*
-     * Fonction exécutée automatiquement tous les jours par Jeedom
-      public static function cronDaily() {
-
-      }
-     */
-
-
-
+	
     /*     * *********************Méthodes d'instance************************* */
 
     public function preInsert() {
@@ -209,7 +183,7 @@ class QNAP extends eqLogic {
     /*     * **********************Getteur Setteur*************************** */
 }
 
-class QNAPCmd extends cmd {
+class qnapCmd extends cmd {
     /*     * *************************Attributs****************************** */
 
 
@@ -218,16 +192,17 @@ class QNAPCmd extends cmd {
 
     /*     * *********************Methode d'instance************************* */
 
-    /*
-     * Non obligatoire permet de demander de ne pas supprimer les commandes même si elles ne sont pas dans la nouvelle configuration de l'équipement envoyé en JS
-      public function dontRemoveCmd() {
-      return true;
-      }
-     */
 
     public function execute($_options = null) {
-        
-    }
+		$eqLogic = $this->getEqLogic();
+		if ($this->getLogicalId() == 'refresh') {
+			$eqLogic->setCache('askToEqLogic', 0);
+			$eqLogic->updateSysInfo();
+		} else if ($this->type == 'action') {
+			$eqLogic->cli_execCmd($this->getConfiguration('usercmd'));
+		}
+		return true;
+	}
 
     /*     * **********************Getteur Setteur*************************** */
 }

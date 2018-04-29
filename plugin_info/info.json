@@ -1,5 +1,5 @@
 {
-	"id" : "QNAP",
+	"id" : "qnap",
 	"name" : "QNAP",
 	"description" : "Plugin pour la supervision de NAS QNAP",
 	"licence" : "AGPL",
@@ -7,8 +7,6 @@
 	"require" : "3.0",
 	"category" : "monitoring",
 	"hasDependency" : true,
-	"hasOwnDeamon" : false,
-	"maxDependancyInstallTime" : 0,
-	"changelog" : "https://jeedom.github.io/plugin-template/#language#/changelog",
-	"documentation" : "https://jeedom.github.io/plugin-template/#language#/"
+	"changelog" : "https://jeedom.github.io/plugin-qnap/#language#/changelog",
+	"documentation" : "https://jeedom.github.io/plugin-qnap/#language#/"
 }
