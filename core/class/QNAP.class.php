@@ -44,18 +44,6 @@ class qnap extends eqLogic {
 	
     /*     * *********************Méthodes d'instance************************* */
 
-    public function preInsert() {
-        
-    }
-
-    public function postInsert() {
-        
-    }
-
-    public function preSave() {
-        
-    }
-
     public function postSave() {
 		log::add('QNAP', 'debug', 'postSave');
         $QNAPCmd = $this->getCmd(null, 'cpu');
@@ -74,22 +62,6 @@ class qnap extends eqLogic {
 		}
     }
 
-    public function preUpdate() {
-        
-    }
-
-    public function postUpdate() {
-        
-    }
-
-    public function preRemove() {
-        
-    }
-
-    public function postRemove() {
-        
-    }
-	
 	public function getInformations() {
 		// getting configuration
 		$IPaddress = $this->getConfiguration('IPaddress');
@@ -161,24 +133,28 @@ class qnap extends eqLogic {
 			$obj->event($info);
 		}
 	}
-    /*
-     * Non obligatoire mais permet de modifier l'affichage du widget si vous en avez besoin
-      public function toHtml($_version = 'dashboard') {
 
-      }
-     */
+	/*     * *********************Methode d'instance************************* */
+		
+	public function preSave() {
+		if ($this->getConfiguration('autorefresh') == '') {
+			$this->setConfiguration('autorefresh', '*/15 * * * *');
+		}
+	}
 
-    /*
-     * Non obligatoire mais ca permet de déclencher une action après modification de variable de configuration
-    public static function postConfig_<Variable>() {
-    }
-     */
-
-    /*
-     * Non obligatoire mais ca permet de déclencher une action avant modification de variable de configuration
-    public static function preConfig_<Variable>() {
-    }
-     */
+	public function postSave() {
+		$refresh = $this->getCmd(null, 'refresh');
+		if (!is_object($refresh)) {
+			$refresh = new qnapCmd();
+		}
+		$refresh->setName(__('Rafraîchir', __FILE__));
+		$refresh->setEqLogic_id($this->getId());
+		$refresh->setLogicalId('refresh');
+		$refresh->setType('action');
+		$refresh->setSubType('other');
+		$refresh->save();
+		$this->setCache('askToEqLogic', 0);
+	}
 
     /*     * **********************Getteur Setteur*************************** */
 }
@@ -197,7 +173,6 @@ class qnapCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 		if ($this->getLogicalId() == 'refresh') {
 			$eqLogic->setCache('askToEqLogic', 0);
-			$eqLogic->updateSysInfo();
 		} else if ($this->type == 'action') {
 			$eqLogic->cli_execCmd($this->getConfiguration('usercmd'));
 		}
