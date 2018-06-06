@@ -107,7 +107,7 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 							</div>
 						</div>
 						<div>
-							<legend>{{Configuration SSH}}</legend>
+							<legend>{{Configuration NAS}}</legend>
 							<div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{IP}}</label>
@@ -115,6 +115,11 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ip" />
 									</div>
 								</div>
+							</div>
+						</div>
+						<div>
+							<legend>{{Configuration SSH}}</legend>
+							<div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{Nom d'utilisateur}}</label>
 									<div class="col-sm-2">
@@ -129,7 +134,17 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 								</div>
 							</div>
 						</div>
-
+						<div>
+							<legend>{{Configuration SNMP v2}}</legend>
+							<div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{Communauté RO SNMP}}</label>
+									<div class="col-sm-2">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="snmp" />
+									</div>
+								</div>
+							</div>
+						</div>
 					</fieldset>
 				</form>
 			</div>
@@ -139,10 +154,9 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 					<thead>
 						<tr>
 							<th style="width:250px;">{{Nom}}</th>
-							<th>{{Paramètres}}</th>
 							<th>{{Commande}}</th>
 							<th>{{Options}}</th>
-							<th>{{Parameters}}</th>
+							<th>{{Paramètres}}</th>
 							<th style="width:200px;">{{Action}}</th>
 						</tr>
 					</thead>

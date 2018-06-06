@@ -124,6 +124,13 @@ class qnap extends eqLogic {
 		}
 	}
 	
+	// execute SNMP command
+	private function execSNMP($ip, $com, $oid) {
+		$cmdOutput = snmp2_walk($ip, $com, $oid);
+		log::add('qnap', 'debug', 'Commande SNMP '.$oid);
+		return $cmdOutput;
+	}
+	
 	// execute SSH command
 	private function execSSH($cmd) {
 		$cmdOutput = ssh2_exec($this->SSH, $cmd);
