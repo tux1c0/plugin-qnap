@@ -106,31 +106,25 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 								<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-sm-2 control-label">{{Fréquence de mise à jour}}</label>
-							<div class="col-sm-2">
-								<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="autorefresh" />
-							</div>
-						</div>
-						<div class="motor_config cli">
-							<legend>{{Paramètres SSH}}</legend>
-							<div class="cli_mode cli_ssh">
+						<div>
+							<legend>{{Configuration SSH}}</legend>
+							<div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{IP}}</label>
 									<div class="col-sm-2">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ssh::ip" />
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ip" />
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{Nom d'utilisateur}}</label>
 									<div class="col-sm-2">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ssh::username" />
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="username" />
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{Mot de passe}}</label>
 									<div class="col-sm-2">
-										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ssh::password" />
+										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" />
 									</div>
 								</div>
 							</div>

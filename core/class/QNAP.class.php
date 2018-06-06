@@ -21,142 +21,231 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class qnap extends eqLogic {
     /*     * *************************Attributs****************************** */
-	private $SSH;
-
-
+	//private $SSH;
+	
     /*     * ***********************Methode static*************************** */
 	public static function dependancy_info() {
 		$return = array();
 		$return['progress_file'] = jeedom::getTmpFolder('qnap') . '/dependance';
-		if (exec(system::getCmdSudo() . system::get('cmd_check') . '-E "php5-ssh2" | wc -l') >= 1) {
+		if (exec(system::getCmdSudo() . system::get('cmd_check') . '-E "php-ssh2" | wc -l') >= 1) {
 			$return['state'] = 'ok';
 		} else {
 			$return['state'] = 'nok';
 		}
 		return $return;
 	}
-	
 	public static function dependancy_install() {
 		log::remove(__CLASS__ . '_update');
-		return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . jeedom::getTmpFolder('qnap') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
+		return array('script' => dirname(__FILE__) . '/../../resources/install.sh ' . jeedom::getTmpFolder('qnap') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
 	}
 
+	public static function update($_eqLogic_id = null) {
+		if ($_eqLogic_id == null) {
+			$eqLogics = eqLogic::byType('qnap');
+		} else {
+			$eqLogics = array(eqLogic::byId($_eqLogic_id));
+		}
+		foreach ($eqLogics as $qnap) {
+			$autorefresh = "*/15 * * * *";
+			try {
+				$c = new Cron\CronExpression($autorefresh, new Cron\FieldFactory);
+				if ($c->isDue()) {
+					if ($qnap->getCache('askToEqLogic', 0) > 3) {
+						log::add('qnap', 'error', __('Trop d\'interrogation sans retour, désactivation des demandes : ', __FILE__) . $qnap->getHumanName());
+						$qnap->setStatus('timeout', 1);
+						continue;
+					}
+					try {
+						$prevAskToEqLogic = $qnap->getCache('askToEqLogic', 0);
+						$qnap->setCache('askToEqLogic', $prevAskToEqLogic + 1);
+						$qnap->getQNAPInfo();
+						if ($qnap->getCache('askToEqLogic', 0) == ($prevAskToEqLogic + 1)) {
+							$qnap->setCache('askToEqLogic', 0);
+						}
+					} catch (Exception $e) {
+						log::add('qnap', 'error', $e->getMessage());
+					}
+				}
+			} catch (Exception $exc) {
+				log::add('qnap', 'error', __('Expression cron non valide pour ', __FILE__) . $qnap->getHumanName() . ' : ' . $autorefresh);
+			}
+		}
+	}
 	
-    /*     * *********************Méthodes d'instance************************* */
-
-    public function postSave() {
-		log::add('QNAP', 'debug', 'postSave');
-        $QNAPCmd = $this->getCmd(null, 'cpu');
-		if (!is_object($QNAPCmd)) {
-			$QNAPCmd = new QNAPCmd();
-			$QNAPCmd->setName(__('CPU', __FILE__));
-			$QNAPCmd->setEqLogic_id($this->getId());
-			$QNAPCmd->setLogicalId('cpu');
-			$QNAPCmd->setType('info');
-			$QNAPCmd->setSubType('string');
-			$QNAPCmd->save();
-		}
-		
-		foreach (eqLogic::byType('QNAP') as $QNAP) {
-			$QNAP->getInformations();
-		}
-    }
-
-	public function getInformations() {
+	public function getQNAPInfo() {
 		// getting configuration
-		$IPaddress = $this->getConfiguration('IPaddress');
-		$login = $this->getConfiguration('SSHlogin');
-		$pwd = $this->getConfiguration('SSHpwd');
+		$IPaddress = $this->getConfiguration('ip');
+		$login = $this->getConfiguration('username');
+		$pwd = $this->getConfiguration('password');
 		$NAS = $this->getName();
 		
 		// var
-		$infos = array(
-			'cpu' 	=> '',
-			'ram' 	=> '',
-			'os' 	=> ''
+		$this->infos = array(
+			'cpu' 		=> '',
+			'ram' 		=> '',
+			'hdd'		=> '',
+			'os' 		=> '',
+			'status'	=> ''
 		);
 
 		// commands
 		$cmdCPU = "lscpu | grep '^CPU(s)' | awk '{ print $NF }'";
 		$cmdRAM = "";
-		$cmdOS = "";
+		$cmdHDD = "";
+		$cmdOS = "uname -rnsm";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
-			$infos['cpu'] = $this->execSSH($cmdCPU);
-			
+			//$this->infos['cpu'] = $this->execSSH($cmdCPU);
+			//$this->infos['ram'] = $this->execSSH($cmdRAM);
+			//$this->infos['hdd'] = $this->execSSH($cmdHDD);
+			$this->infos['os'] = $this->execSSH($cmdOS);	
+			$this->infos['status'] = "Up";
+		} else {
+			$this->infos['status'] = "Down";
 		}
 		
 		// close SSH
-		$this->disconnect();
+		$this->disconnect($NAS);
 		
-		$this->updateInfo('cpu', $infos['cpu']);
+		$this->updateInfo();
     
 	}
-
+	
+	public function updateInfo() {
+		foreach ($this->getCmd('info') as $cmd) {
+			try {
+				$key = $cmd->getLogicalId();
+				$value = $this->infos[$key];
+				$this->checkAndUpdateCmd($cmd, $value);
+			} catch (Exception $e) {
+				log::add('qnap', 'error', 'Impossible de mettre à jour le champs '.$key);
+			}
+		}
+	}
+	
 	// execute SSH command
 	private function execSSH($cmd) {
 		$cmdOutput = ssh2_exec($this->SSH, $cmd);
+		log::add('qnap', 'debug', 'Commande '.$cmd);
 		stream_set_blocking($cmdOutput, true);
 		$output = stream_get_contents($cmdOutput);
-		
-		$return $output;
+		log::add('qnap', 'debug', 'Retour Commande '.$output);
+		return $output;
 	}
 	
 	// establish SSH
 	private function startSSH($ip, $name, $user, $pass) {
 		// SSH connection
 		if (!$this->SSH = ssh2_connect($ip, 22)) {
-			log::add('QNAP', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
-			return 1;
+			log::add('qnap', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
+			return 0;
 		}else{
 			// SSH authentication
 			if (!ssh2_auth_password($this->SSH, $user, $pass)){
-				log::add('QNAP', 'error', 'Mauvais login/password pour '.$name);
-				return 1;
-			}else{
+				log::add('qnap', 'error', 'Mauvais login/password pour '.$name);
 				return 0;
+			}else{
+				log::add('qnap', 'debug', 'Connexion OK pour '.$name);
+				return 1;
 			}
 		}	
 	}
 	
 	// Close SSH connection
-	private function disconnect() {
-        $this->exec('echo "EXITING" && exit;');
+	private function disconnect($name) {
+        if (!ssh2_disconnect($this->SSH)) {
+			log::add('qnap', 'error', 'Erreur de déconnexion pour '.$name);
+		}
         $this->SSH = null;
-    } 
+    }
 	
-	// display
-	private function updateInfo($objHtml, $info) {
-		$obj = $this->getCmd(null, $objHtml);
-		if(is_object($obj)){
-			$obj->event($info);
-		}
-	}
-
-	/*     * *********************Methode d'instance************************* */
-		
-	public function preSave() {
-		if ($this->getConfiguration('autorefresh') == '') {
-			$this->setConfiguration('autorefresh', '*/15 * * * *');
-		}
-	}
+		/*     * *********************Methode d'instance************************* */
 
 	public function postSave() {
-		$refresh = $this->getCmd(null, 'refresh');
-		if (!is_object($refresh)) {
-			$refresh = new qnapCmd();
+		
+		$QNAPCmd = $this->getCmd(null, 'status');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'status');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Statut', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('status');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
 		}
-		$refresh->setName(__('Rafraîchir', __FILE__));
-		$refresh->setEqLogic_id($this->getId());
-		$refresh->setLogicalId('refresh');
-		$refresh->setType('action');
-		$refresh->setSubType('other');
-		$refresh->save();
+		
+		$QNAPCmd = $this->getCmd(null, 'cpu');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'cpu');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('CPU', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('cpu');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('numeric');
+			$QNAPCmd->setUnite( '%' );
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'ram');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'ram');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('RAM', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('ram');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('numeric');
+			$QNAPCmd->setUnite( '%' );
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'hdd');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'hdd');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('HDD', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('hdd');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('numeric');
+			$QNAPCmd->setUnite( '%' );
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'os');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'os');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('OS', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('os');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'refresh');
+		if (!is_object($QNAPCmd)) {
+			log::add('qnap', 'debug', 'refresh');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Rafraîchir', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('refresh');
+			$QNAPCmd->setType('action');
+			$QNAPCmd->setSubType('other');
+			$QNAPCmd->save();
+		}
+
+		if ($this->getIsEnable()) {
+			$this->getQNAPInfo();
+		}
+		
 		$this->setCache('askToEqLogic', 0);
 	}
-
-    /*     * **********************Getteur Setteur*************************** */
+	
 }
 
 class qnapCmd extends cmd {
@@ -173,6 +262,7 @@ class qnapCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 		if ($this->getLogicalId() == 'refresh') {
 			$eqLogic->setCache('askToEqLogic', 0);
+			$eqLogic->getQNAPInfo();
 		} else if ($this->type == 'action') {
 			$eqLogic->cli_execCmd($this->getConfiguration('usercmd'));
 		}
