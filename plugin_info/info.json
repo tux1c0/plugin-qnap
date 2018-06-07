@@ -1,5 +1,5 @@
 {
-	"id" : "qnap",
+	"id" : "QNAP",
 	"name" : "QNAP",
 	"description" : "Plugin pour la supervision de NAS QNAP",
 	"licence" : "AGPL",

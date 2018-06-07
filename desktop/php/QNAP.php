@@ -2,7 +2,7 @@
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$plugin = plugin::byId('qnap');
+$plugin = plugin::byId('QNAP');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -169,5 +169,5 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 	</div>
 </div>
 
-<?php include_file('desktop', 'qnap', 'js', 'qnap');?>
+<?php include_file('desktop', 'QNAP', 'js', 'QNAP');?>
 <?php include_file('core', 'plugin.template', 'js');?>

@@ -18,11 +18,11 @@
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
-function qnap_install() {
-	$cron = cron::byClassAndFunction('qnap', 'update');
+function QNAP_install() {
+	$cron = cron::byClassAndFunction('QNAP', 'update');
 	if (!is_object($cron)) {
 		$cron = new cron();
-		$cron->setClass('qnap');
+		$cron->setClass('QNAP');
 		$cron->setFunction('update');
 		$cron->setEnable(1);
 		$cron->setDeamon(0);
@@ -32,12 +32,12 @@ function qnap_install() {
 	}
 }
 
-function qnap_update() {
-	$cron = cron::byClassAndFunction('qnap', 'update');
+function QNAP_update() {
+	$cron = cron::byClassAndFunction('QNAP', 'update');
 	if (!is_object($cron)) {
 		$cron = new cron();
 	}
-	$cron->setClass('qnap');
+	$cron->setClass('QNAP');
 	$cron->setFunction('update');
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
@@ -45,13 +45,13 @@ function qnap_update() {
 	$cron->setTimeout(30);
 	$cron->save();
 	$cron->stop();
-	foreach (qnap::byType('qnap') as $QNAP) {
+	foreach (qnap::byType('QNAP') as $QNAP) {
 		$QNAP->save();
 	}
 }
 
-function qnap_remove() {
-	$cron = cron::byClassAndFunction('qnap', 'update');
+function QNAP_remove() {
+	$cron = cron::byClassAndFunction('QNAP', 'update');
 	if (is_object($cron)) {
 		$cron->remove();
 	}
