@@ -110,8 +110,10 @@ class QNAP extends eqLogic {
 			$this->infos['hddtot'] = $hdd_output_array[0];
 			$this->infos['hddused'] = $hdd_output_array[1];
 			
-			$this->infos['os'] = $this->execSSH($cmdOS);	
+			$this->infos['os'] = $this->execSSH($cmdOS);
 			$this->infos['status'] = "Up";
+			$this->infos['uptime'] = $this->execSSH($cmdUptime);
+			
 		} else {
 			$this->infos['status'] = "Down";
 		}
