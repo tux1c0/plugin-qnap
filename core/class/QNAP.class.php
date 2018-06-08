@@ -112,7 +112,7 @@ class QNAP extends eqLogic {
 			
 			$this->infos['os'] = $this->execSSH($cmdOS);
 			$this->infos['status'] = "Up";
-			$this->infos['uptime'] = $this->execSSH($cmdUptime);
+			$this->infos['uptime'] = str_replace(',', '', $this->execSSH($cmdUptime));
 			
 		} else {
 			$this->infos['status'] = "Down";
