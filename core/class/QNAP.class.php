@@ -80,7 +80,8 @@ class QNAP extends eqLogic {
 			'hddtot'	=> '',
 			'hddused'	=> '',
 			'os' 		=> '',
-			'status'	=> ''
+			'status'	=> '',
+			'uptime'	=> ''
 		);
 
 		// commands
@@ -90,6 +91,7 @@ class QNAP extends eqLogic {
 		$cmdRAMfree = "cat /proc/meminfo |  grep '^MemFree' | awk '{ print $2 }'";
 		$cmdHDD = "df -h /dev/md0 | grep '/dev/md0' | head -1 | awk '{ print $2,$3,$5 }'";
 		$cmdOS = "uname -rnsm";
+		$cmdUptime = "uptime | awk '{ print $3,$4,$5 }'";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
@@ -108,8 +110,10 @@ class QNAP extends eqLogic {
 			$this->infos['hddtot'] = $hdd_output_array[0];
 			$this->infos['hddused'] = $hdd_output_array[1];
 			
-			$this->infos['os'] = $this->execSSH($cmdOS);	
+			$this->infos['os'] = $this->execSSH($cmdOS);
 			$this->infos['status'] = "Up";
+			$this->infos['uptime'] = str_replace(',', '', $this->execSSH($cmdUptime));
+			
 		} else {
 			$this->infos['status'] = "Down";
 		}
@@ -132,6 +136,40 @@ class QNAP extends eqLogic {
 				log::add('QNAP', 'error', 'Impossible de mettre à jour le champs '.$key);
 			}
 		}
+	}
+	
+	public function reboot() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$login = $this->getConfiguration('username');
+		$pwd = $this->getConfiguration('password');
+		$NAS = $this->getName();
+		$cmd = "reboot";
+		
+		// SSH connection & launch commands
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+			$this->execSSH($cmd);
+		}
+		
+		// close SSH
+		$this->disconnect($NAS);
+	}
+	
+	public function halt() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$login = $this->getConfiguration('username');
+		$pwd = $this->getConfiguration('password');
+		$NAS = $this->getName();
+		$cmd = "poweroff";
+		
+		// SSH connection & launch commands
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+			$this->execSSH($cmd);
+		}
+		
+		// close SSH
+		$this->disconnect($NAS);
 	}
 	
 	// execute SNMP command
@@ -308,6 +346,18 @@ class QNAP extends eqLogic {
 			$QNAPCmd->save();
 		}
 		
+		$QNAPCmd = $this->getCmd(null, 'uptime');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'uptime');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Uptime', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('uptime');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
 		$QNAPCmd = $this->getCmd(null, 'refresh');
 		if (!is_object($QNAPCmd)) {
 			log::add('QNAP', 'debug', 'refresh');
@@ -315,6 +365,30 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setName(__('Rafraîchir', __FILE__));
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('refresh');
+			$QNAPCmd->setType('action');
+			$QNAPCmd->setSubType('other');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'reboot');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'reboot');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Redémarrer', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('reboot');
+			$QNAPCmd->setType('action');
+			$QNAPCmd->setSubType('other');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'poweroff');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'poweroff');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Arrêter', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('poweroff');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
 			$QNAPCmd->save();
@@ -339,10 +413,20 @@ class qnapCmd extends cmd {
 
     public function execute($_options = null) {
 		$eqLogic = $this->getEqLogic();
-		if ($this->getLogicalId() == 'refresh') {
-			$eqLogic->getQNAPInfo();
-		} else if ($this->type == 'action') {
-			$eqLogic->cli_execCmd($this->getConfiguration('usercmd'));
+
+		switch ($this->getLogicalId()) {
+			case "reboot":
+				$eqLogic->reboot();
+				log::add('QNAP','debug','reboot ' . $this->getHumanName());
+				break;
+			case "poweroff":
+				$eqLogic->halt();
+				log::add('QNAP','debug','poweroff ' . $this->getHumanName());
+				break;
+			case "refresh":
+				$eqLogic->getQNAPInfo();
+				log::add('QNAP','debug','refresh ' . $this->getHumanName());
+				break;
 		}
 		return true;
 	}
