@@ -94,7 +94,8 @@ class QNAP extends eqLogic {
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
 		$cmdRAMfree = "cat /proc/meminfo |  grep '^MemFree' | awk '{ print $2 }'";
-		//$cmdHDD = "df -h /dev/md0 | grep '/dev/md0' | head -1 | awk '{ print $2,$3,$5 }'";
+		$cmdRAMbuffer = "cat /proc/meminfo |  grep '^Buffers' | awk '{ print $2 }'";
+		$cmdRAMcached = "cat /proc/meminfo |  grep '^Cached' | awk '{ print $2 }'";
 		$cmdConfig = "getcfg SHARE_DEF defVolMP -f /etc/config/def_share.info";
 		$cmdHDD = "df -h ";
 		$cmdHDDgrep = " | grep ";
@@ -123,8 +124,11 @@ class QNAP extends eqLogic {
 			
 			$ramtot = $this->execSSH($cmdRAMtot);
 			$ramfree = $this->execSSH($cmdRAMfree);
-			$this->infos['ramused'] = round(($ramtot-$ramfree)/1024).'M';
-			$this->infos['ram'] = round(100-($ramfree*100/$ramtot));
+			$rambuffer = $this->execSSH($cmdRAMbuffer);
+			$ramcache = $this->execSSH($cmdRAMcached);
+			$ramfreetotal = $ramfree+$rambuffer+$ramcache;
+			$this->infos['ramused'] = round(($ramtot-$ramfreetotal)/1024).'M';
+			$this->infos['ram'] = round(100-($ramfreetotal*100/$ramtot));
 			$this->infos['ramtot'] = round($ramtot/1024).'M';
 			
 			$hdd_conf = trim($this->execSSH($cmdConfig));
