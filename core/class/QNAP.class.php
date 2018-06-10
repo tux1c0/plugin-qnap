@@ -85,7 +85,8 @@ class QNAP extends eqLogic {
 			'model'		=> '',
 			'version'	=> '',
 			'systemp'	=> '',
-			'cputemp'	=> ''
+			'cputemp'	=> '',
+			'uptime'	=> ''
 		);
 
 		// commands
@@ -104,16 +105,17 @@ class QNAP extends eqLogic {
 		$cmdBuild = "getcfg system 'Build Number'";
 		$cmdSysTemp = "getsysinfo systmp";
 		$cmdCPUTemp = "getsysinfo cputmp";
+		$cmdUptime = "uptime";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU);
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
-			$this->infos['model'] = $this->execSSH($cmdModel);
-			$this->infos['version'] = $this->execSSH($cmdVersion).' Build '.$this->execSSH($cmdBuild);
-			$this->infos['systemp'] = $this->execSSH($cmdSysTemp);
-			$this->infos['cputemp'] = $this->execSSH($cmdCPUTemp);
-			
+			$this->infos['model'] = trim($this->execSSH($cmdModel));
+			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
+			$this->infos['systemp'] = trim($this->execSSH($cmdSysTemp));
+			$this->infos['cputemp'] = trim($this->execSSH($cmdCPUTemp));
+			$this->infos['uptime'] = trim($this->execSSH($cmdUptime));
 			
 			$ramtot = $this->execSSH($cmdRAMtot);
 			$ramfree = $this->execSSH($cmdRAMfree);
@@ -121,7 +123,7 @@ class QNAP extends eqLogic {
 			$this->infos['ram'] = round(100-($ramfree*100/$ramtot));
 			$this->infos['ramtot'] = round($ramtot/1024).'M';
 			
-			$hdd_conf = $this->execSSH($cmdConfig);
+			$hdd_conf = trim($this->execSSH($cmdConfig));
 			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'".$cmdHDDawk);
 			$hdd_output_array = explode(" ", $hdd_output);
 			$this->infos['hdd'] = str_replace('%', '', $hdd_output_array[2]);
@@ -375,6 +377,17 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
 		}
+		
+		$QNAPCmd = $this->getCmd(null, 'uptime');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'uptime');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Uptime', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('uptime');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAP
 		
 		$QNAPCmd = $this->getCmd(null, 'refresh');
 		if (!is_object($QNAPCmd)) {
