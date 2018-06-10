@@ -66,6 +66,7 @@ class QNAP extends eqLogic {
 		$IPaddress = $this->getConfiguration('ip');
 		$login = $this->getConfiguration('username');
 		$pwd = $this->getConfiguration('password');
+		$port = $this->getConfiguration('portssh');
 		$community = $this->getConfiguration('snmp');
 		$NAS = $this->getName();
 		
@@ -92,7 +93,7 @@ class QNAP extends eqLogic {
 		$cmdOS = "uname -rnsm";
 
 		// SSH connection & launch commands
-		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU);
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
 			
@@ -155,9 +156,9 @@ class QNAP extends eqLogic {
 	}
 	
 	// establish SSH
-	private function startSSH($ip, $name, $user, $pass) {
+	private function startSSH($ip, $name, $user, $pass, $SSHport) {
 		// SSH connection
-		if (!$this->SSH = ssh2_connect($ip, 22)) {
+		if (!$this->SSH = ssh2_connect($ip, $SSHport)) {
 			log::add('QNAP', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
 			return 0;
 		}else{

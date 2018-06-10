@@ -132,6 +132,12 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 										<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" />
 									</div>
 								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{Port SSH}}</label>
+									<div class="col-sm-2">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="portssh" />
+									</div>
+								</div>
 							</div>
 						</div>
 						<div>
