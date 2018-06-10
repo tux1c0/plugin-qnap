@@ -81,7 +81,11 @@ class QNAP extends eqLogic {
 			'hddtot'	=> '',
 			'hddused'	=> '',
 			'os' 		=> '',
-			'status'	=> ''
+			'status'	=> '',
+			'model'		=> '',
+			'version'	=> '',
+			'systemp'	=> '',
+			'cputemp'	=> ''
 		);
 
 		// commands
@@ -89,13 +93,27 @@ class QNAP extends eqLogic {
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
 		$cmdRAMfree = "cat /proc/meminfo |  grep '^MemFree' | awk '{ print $2 }'";
-		$cmdHDD = "df -h /dev/md0 | grep '/dev/md0' | head -1 | awk '{ print $2,$3,$5 }'";
+		//$cmdHDD = "df -h /dev/md0 | grep '/dev/md0' | head -1 | awk '{ print $2,$3,$5 }'";
+		$cmdConfig = "getcfg SHARE_DEF defVolMP -f /etc/config/def_share.info";
+		$cmdHDD = "df -h ";
+		$cmdHDDgrep = " | grep ";
+		$cmdHDDawk = " | awk '{ print $2,$3,$5 }'";
 		$cmdOS = "uname -rnsm";
+		$cmdModel = "getsysinfo model";
+		$cmdVersion = "getcfg system version";
+		$cmdBuild = "getcfg system 'Build Number'";
+		$cmdSysTemp = "getsysinfo systmp";
+		$cmdCPUTemp = "getsysinfo cputmp";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU);
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
+			$this->infos['model'] = $this->execSSH($cmdModel);
+			$this->infos['version'] = $this->execSSH($cmdVersion).' Build '.$this->execSSH($cmdBuild);
+			$this->infos['systemp'] = $this->execSSH($cmdSysTemp);
+			$this->infos['cputemp'] = $this->execSSH($cmdCPUTemp);
+			
 			
 			$ramtot = $this->execSSH($cmdRAMtot);
 			$ramfree = $this->execSSH($cmdRAMfree);
@@ -103,7 +121,8 @@ class QNAP extends eqLogic {
 			$this->infos['ram'] = round(100-($ramfree*100/$ramtot));
 			$this->infos['ramtot'] = round($ramtot/1024).'M';
 			
-			$hdd_output = $this->execSSH($cmdHDD);
+			$hdd_conf = $this->execSSH($cmdConfig);
+			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'".$cmdHDDawk);
 			$hdd_output_array = explode(" ", $hdd_output);
 			$this->infos['hdd'] = str_replace('%', '', $hdd_output_array[2]);
 			$this->infos['hddtot'] = $hdd_output_array[0];
@@ -304,6 +323,54 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setName(__('OS', __FILE__));
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('os');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'model');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'model');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Modèle', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('model');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'version');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'version');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Version', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('version');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'cputemp');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'cputemp');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Température CPU', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('cputemp');
+			$QNAPCmd->setType('info');
+			$QNAPCmd->setSubType('string');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'systemp');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'systemp');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Température Système', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('systemp');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
