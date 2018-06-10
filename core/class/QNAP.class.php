@@ -113,9 +113,13 @@ class QNAP extends eqLogic {
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
 			$this->infos['model'] = trim($this->execSSH($cmdModel));
 			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
-			$this->infos['systemp'] = trim($this->execSSH($cmdSysTemp));
-			$this->infos['cputemp'] = trim($this->execSSH($cmdCPUTemp));
-			$this->infos['uptime'] = trim($this->execSSH($cmdUptime));
+			$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
+			$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
+			
+			$up = trim($this->execSSH($cmdUptime));
+			$up_array = explode(",", $up);
+			$up_array2 = explode("up", $up_array[0]);
+			$this->infos['uptime'] = trim($up_array2[1]);
 			
 			$ramtot = $this->execSSH($cmdRAMtot);
 			$ramfree = $this->execSSH($cmdRAMfree);
