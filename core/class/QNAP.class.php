@@ -99,7 +99,6 @@ class QNAP extends eqLogic {
 		$cmdConfig = "getcfg SHARE_DEF defVolMP -f /etc/config/def_share.info";
 		$cmdHDD = "df -h ";
 		$cmdHDDgrep = " | grep ";
-		//$cmdHDDawk = " | awk '{ print $2,$3,$5 }'";
 		$cmdOS = "uname -rnsm";
 		$cmdModel = "getsysinfo model";
 		$cmdVersion = "getcfg system version";
@@ -135,7 +134,6 @@ class QNAP extends eqLogic {
 			$this->infos['ramtot'] = round($ramtot/1024).'M';
 			
 			$hdd_conf = trim($this->execSSH($cmdConfig));
-			//$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'".$cmdHDDawk);
 			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
 			$hdd_output_array = explode(" ", $hdd_output);
 			foreach ($hdd_output_array as $val) {
@@ -143,9 +141,6 @@ class QNAP extends eqLogic {
 						$this->infos['hdd'] = str_replace('%', '', trim($val));
 					}
 			}
-			/*$this->infos['hdd'] = str_replace('%', '', $hdd_output_array[2]);
-			$this->infos['hddtot'] = $hdd_output_array[0];
-			$this->infos['hddused'] = $hdd_output_array[1];*/
 			
 			$hdd_vol = trim($this->execSSH($cmdHDDvol));
 			$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
