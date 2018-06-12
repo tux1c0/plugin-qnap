@@ -140,7 +140,7 @@ class QNAP extends eqLogic {
 			$hdd_output_array = explode(" ", $hdd_output);
 			foreach ($hdd_output_array as $val) {
 					if(strpos($val, '%') !== false) {
-						this->infos['hdd'] = str_replace('%', '', trim($val));
+						$this->infos['hdd'] = str_replace('%', '', trim($val));
 					}
 			}
 			/*$this->infos['hdd'] = str_replace('%', '', $hdd_output_array[2]);
