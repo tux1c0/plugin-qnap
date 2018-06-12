@@ -395,7 +395,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('uptime');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAP->save();
+			$QNAPCmd->save();
 		}
 		
 		$QNAPCmd = $this->getCmd(null, 'refresh');
