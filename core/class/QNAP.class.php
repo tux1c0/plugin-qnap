@@ -79,7 +79,7 @@ class QNAP extends eqLogic {
 			'ramused'	=> '',
 			'hdd'		=> '',
 			'hddtot'	=> '',
-			'hddused'	=> '',
+			'hddfree'	=> '',
 			'os' 		=> '',
 			'status'	=> '',
 			'model'		=> '',
@@ -148,8 +148,8 @@ class QNAP extends eqLogic {
 			$this->infos['hddused'] = $hdd_output_array[1];*/
 			
 			$hdd_vol = trim($this->execSSH($cmdHDDvol));
-			$this->infos['hddtot'] = explode(" ", trim($this->execSSH($cmdHDDtotal.$hdd_vol)));
-			$this->infos['hddfree'] = explode(" ", trim($this->execSSH($cmdHDDfree.$hdd_vol)));
+			$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
+			$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
 			
 			$this->infos['os'] = $this->execSSH($cmdOS);	
 			$this->infos['status'] = "Up";
