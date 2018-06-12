@@ -79,7 +79,7 @@ class QNAP extends eqLogic {
 			'ramused'	=> '',
 			'hdd'		=> '',
 			'hddtot'	=> '',
-			'hddused'	=> '',
+			'hddfree'	=> '',
 			'os' 		=> '',
 			'status'	=> '',
 			'model'		=> '',
@@ -99,7 +99,6 @@ class QNAP extends eqLogic {
 		$cmdConfig = "getcfg SHARE_DEF defVolMP -f /etc/config/def_share.info";
 		$cmdHDD = "df -h ";
 		$cmdHDDgrep = " | grep ";
-		$cmdHDDawk = " | awk '{ print $2,$3,$5 }'";
 		$cmdOS = "uname -rnsm";
 		$cmdModel = "getsysinfo model";
 		$cmdVersion = "getcfg system version";
@@ -107,6 +106,9 @@ class QNAP extends eqLogic {
 		$cmdSysTemp = "getsysinfo systmp";
 		$cmdCPUTemp = "getsysinfo cputmp";
 		$cmdUptime = "uptime";
+		$cmdHDDvol = "getsysinfo sysvolnum";
+		$cmdHDDtotal = "getsysinfo vol_totalsize volume ";
+		$cmdHDDfree = "getsysinfo vol_freesize volume ";
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
@@ -132,11 +134,17 @@ class QNAP extends eqLogic {
 			$this->infos['ramtot'] = round($ramtot/1024).'M';
 			
 			$hdd_conf = trim($this->execSSH($cmdConfig));
-			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'".$cmdHDDawk);
+			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
 			$hdd_output_array = explode(" ", $hdd_output);
-			$this->infos['hdd'] = str_replace('%', '', $hdd_output_array[2]);
-			$this->infos['hddtot'] = $hdd_output_array[0];
-			$this->infos['hddused'] = $hdd_output_array[1];
+			foreach ($hdd_output_array as $val) {
+					if(strpos($val, '%') !== false) {
+						$this->infos['hdd'] = str_replace('%', '', trim($val));
+					}
+			}
+			
+			$hdd_vol = trim($this->execSSH($cmdHDDvol));
+			$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
+			$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
 			
 			$this->infos['os'] = $this->execSSH($cmdOS);	
 			$this->infos['status'] = "Up";
@@ -313,19 +321,18 @@ class QNAP extends eqLogic {
 			$QNAPCmd->save();
 		}
 		
-		$QNAPCmd = $this->getCmd(null, 'hddused');
+		$QNAPCmd = $this->getCmd(null, 'hddfree');
 		if (!is_object($QNAPCmd)) {
-			log::add('QNAP', 'debug', 'hddused');
+			log::add('QNAP', 'debug', 'hddfree');
 			$QNAPCmd = new qnapCmd();
-			$QNAPCmd->setName(__('Utilisation HDD', __FILE__));
+			$QNAPCmd->setName(__('Espace libre HDD', __FILE__));
 			$QNAPCmd->setEqLogic_id($this->getId());
-			$QNAPCmd->setLogicalId('hddused');
+			$QNAPCmd->setLogicalId('hddfree');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
 		}
-		
-		
+				
 		$QNAPCmd = $this->getCmd(null, 'os');
 		if (!is_object($QNAPCmd)) {
 			log::add('QNAP', 'debug', 'os');
