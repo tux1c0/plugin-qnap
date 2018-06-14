@@ -68,6 +68,7 @@ class QNAP extends eqLogic {
 		$pwd = $this->getConfiguration('password');
 		$port = $this->getConfiguration('portssh');
 		$community = $this->getConfiguration('snmp');
+		$snmpVersion = $this->getConfiguration('snmpversion');
 		$NAS = $this->getName();
 		
 		// var
@@ -112,7 +113,7 @@ class QNAP extends eqLogic {
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
-			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU);
+			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU, $snmpVersion);
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
 			$this->infos['model'] = trim($this->execSSH($cmdModel));
 			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
@@ -173,49 +174,72 @@ class QNAP extends eqLogic {
 	}
 	
 	// execute SNMP command
-	private function execSNMP($ip, $com, $oid) {
-		$cmdOutput = snmp2_walk($ip, $com, $oid);
-		log::add('QNAP', 'debug', 'Commande SNMP IP='.$ip.' OID='.$oid. ', communauté='.$com.' retourne ' .$cmdOutput[0]);
-		$output = explode(':', $cmdOutput[0]);
-		$out = trim(trim(trim($output[1]), '"'));
-		log::add('QNAP', 'debug', 'out ' .$out);
+	private function execSNMP($ip, $com, $oid, $ver) {
+		try {
+			switch ($ver) {
+				case "v1":
+					$cmdOutput = snmpwalk($ip, $com, $oid);
+					break;
+				case "v2":
+					$cmdOutput = snmp2_walk($ip, $com, $oid);
+					break;
+			}
+			log::add('QNAP', 'debug', 'Commande SNMP IP='.$ip.' OID='.$oid. ', communauté='.$com.' retourne ' .$cmdOutput[0]);
+			$output = explode(':', $cmdOutput[0]);
+			$out = trim(trim(trim($output[1]), '"'));
+			log::add('QNAP', 'debug', 'out ' .$out);
+		} catch (Exception $e) {
+			log::add('QNAP', 'error', 'execSNMP retourne '.$e);
+		}
 		return $out;
 	}
 	
 	// execute SSH command
 	private function execSSH($cmd) {
-		$cmdOutput = ssh2_exec($this->SSH, $cmd);
-		log::add('QNAP', 'debug', 'Commande '.$cmd);
-		stream_set_blocking($cmdOutput, true);
-		$output = stream_get_contents($cmdOutput);
-		log::add('QNAP', 'debug', 'Retour Commande '.$output);
+		try {
+			$cmdOutput = ssh2_exec($this->SSH, $cmd);
+			log::add('QNAP', 'debug', 'Commande '.$cmd);
+			stream_set_blocking($cmdOutput, true);
+			$output = stream_get_contents($cmdOutput);
+			log::add('QNAP', 'debug', 'Retour Commande '.$output);
+		} catch (Exception $e) {
+			log::add('QNAP', 'error', 'execSSH retourne '.$e);
+		}
 		return $output;
 	}
 	
 	// establish SSH
 	private function startSSH($ip, $name, $user, $pass, $SSHport) {
-		// SSH connection
-		if (!$this->SSH = ssh2_connect($ip, $SSHport)) {
-			log::add('QNAP', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
-			return 0;
-		}else{
-			// SSH authentication
-			if (!ssh2_auth_password($this->SSH, $user, $pass)){
-				log::add('QNAP', 'error', 'Mauvais login/password pour '.$name);
+		try {
+			// SSH connection
+			if (!$this->SSH = ssh2_connect($ip, $SSHport)) {
+				log::add('QNAP', 'error', 'Impossible de se connecter en SSH au NAS '.$name);
 				return 0;
 			}else{
-				log::add('QNAP', 'debug', 'Connexion OK pour '.$name);
-				return 1;
+				// SSH authentication
+				if (!ssh2_auth_password($this->SSH, $user, $pass)){
+					log::add('QNAP', 'error', 'Mauvais login/password pour '.$name);
+					return 0;
+				}else{
+					log::add('QNAP', 'debug', 'Connexion OK pour '.$name);
+					return 1;
+				}
 			}
-		}	
+		} catch (Exception $e) {
+			log::add('QNAP', 'error', 'startSSH retourne '.$e);
+		}			
 	}
 	
 	// Close SSH connection
 	private function disconnect($name) {
-        if (!ssh2_disconnect($this->SSH)) {
-			log::add('QNAP', 'error', 'Erreur de déconnexion pour '.$name);
+		try {
+			if (!ssh2_disconnect($this->SSH)) {
+				log::add('QNAP', 'error', 'Erreur de déconnexion pour '.$name);
+			}
+			$this->SSH = null;
+		} catch (Exception $e) {
+			log::add('QNAP', 'error', 'disconnect retourne '.$e);
 		}
-        $this->SSH = null;
     }
 	
 		/*     * *********************Methode d'instance************************* */
