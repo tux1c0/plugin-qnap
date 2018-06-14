@@ -68,6 +68,7 @@ class QNAP extends eqLogic {
 		$pwd = $this->getConfiguration('password');
 		$port = $this->getConfiguration('portssh');
 		$community = $this->getConfiguration('snmp');
+		$snmpVersion = $this->getConfiguration('snmpversion');
 		$NAS = $this->getName();
 		
 		// var
@@ -112,7 +113,7 @@ class QNAP extends eqLogic {
 
 		// SSH connection & launch commands
 		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
-			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU);
+			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU, $snmpVersion);
 			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
 			$this->infos['model'] = trim($this->execSSH($cmdModel));
 			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
@@ -173,9 +174,16 @@ class QNAP extends eqLogic {
 	}
 	
 	// execute SNMP command
-	private function execSNMP($ip, $com, $oid) {
+	private function execSNMP($ip, $com, $oid, $ver) {
 		try {
-			$cmdOutput = snmp2_walk($ip, $com, $oid);
+			switch ($ver) {
+				case "v1":
+					$cmdOutput = snmpwalk($ip, $com, $oid);
+					break;
+				case "v2":
+					$cmdOutput = snmp2_walk($ip, $com, $oid);
+					break;
+			}
 			log::add('QNAP', 'debug', 'Commande SNMP IP='.$ip.' OID='.$oid. ', communauté='.$com.' retourne ' .$cmdOutput[0]);
 			$output = explode(':', $cmdOutput[0]);
 			$out = trim(trim(trim($output[1]), '"'));

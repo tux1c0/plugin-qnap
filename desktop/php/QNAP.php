@@ -141,12 +141,27 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 							</div>
 						</div>
 						<div>
-							<legend>{{Configuration SNMP v2}}</legend>
+							<legend>{{Configuration SNMP}}</legend>
 							<div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label"></label>
+									<div class="col-sm-9">
+										<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="fullsnmp" />Utiliser uniquement le SNMP (désactive le SSH)</label>
+									</div>
+								</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label">{{Communauté RO SNMP}}</label>
 									<div class="col-sm-2">
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="snmp" />
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{Version}}</label>
+									<div class="col-sm-2">
+										<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="snmpversion" >
+											<option value="1">v1</option>
+											<option value="2">v2</option>
+										</select>
 									</div>
 								</div>
 							</div>
