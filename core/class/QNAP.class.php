@@ -69,6 +69,7 @@ class QNAP extends eqLogic {
 		$port = $this->getConfiguration('portssh');
 		$community = $this->getConfiguration('snmp');
 		$snmpVersion = $this->getConfiguration('snmpversion');
+		$SNMPonly = $this->getConfiguration('fullsnmp');
 		$NAS = $this->getName();
 		
 		// var
@@ -90,8 +91,25 @@ class QNAP extends eqLogic {
 			'uptime'	=> ''
 		);
 
+		// oids
+		$oidCPU = "1.3.6.1.4.1.24681.1.2.1.0";
+		$oidCPUinfos = "";
+		$oidRAMtot = "";
+		$oidRAMfree = "";
+		$oidRAMbuffer = "";
+		$oidRAMcached = "";
+		$oidConfig = "";
+		$oidHDD = "";
+		$oidOS = "";
+		$oidModel = "";
+		$oidVersion = "";
+		$oidBuild = "";
+		$oidSysTemp = "";
+		$oidCPUTemp = "";
+		$oidUptime = "";
+		$oidHDDtotal = "";
+		$oidHDDfree = "";
 		// commands
-		$cmdCPU = "1.3.6.1.4.1.24681.1.2.1.0";
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
 		$cmdRAMfree = "cat /proc/meminfo |  grep '^MemFree' | awk '{ print $2 }'";
@@ -111,52 +129,59 @@ class QNAP extends eqLogic {
 		$cmdHDDtotal = "getsysinfo vol_totalsize volume ";
 		$cmdHDDfree = "getsysinfo vol_freesize volume ";
 
-		// SSH connection & launch commands
-		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
-			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU, $snmpVersion);
-			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
-			$this->infos['model'] = trim($this->execSSH($cmdModel));
-			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
-			$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
-			$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
+		if($SNMPonly == 1) {
+			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
 			
-			$up = trim($this->execSSH($cmdUptime));
-			$up_array = explode(",", $up);
-			$up_array2 = explode("up", $up_array[0]);
-			$this->infos['uptime'] = trim($up_array2[1]);
-			
-			$ramtot = $this->execSSH($cmdRAMtot);
-			$ramfree = $this->execSSH($cmdRAMfree);
-			$rambuffer = $this->execSSH($cmdRAMbuffer);
-			$ramcache = $this->execSSH($cmdRAMcached);
-			$ramfreetotal = $ramfree+$rambuffer+$ramcache;
-			$this->infos['ramused'] = round(($ramtot-$ramfreetotal)/1024).'M';
-			$this->infos['ram'] = round(100-($ramfreetotal*100/$ramtot));
-			$this->infos['ramtot'] = round($ramtot/1024).'M';
-			
-			$hdd_conf = trim($this->execSSH($cmdConfig));
-			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
-			$hdd_output_array = explode(" ", $hdd_output);
-			foreach ($hdd_output_array as $val) {
-					if(strpos($val, '%') !== false) {
-						$this->infos['hdd'] = str_replace('%', '', trim($val));
-					}
+			$this->updateInfo();
+		} else {
+			// SSH connection & launch commands
+			if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
+				$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
+				
+				$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
+				$this->infos['model'] = trim($this->execSSH($cmdModel));
+				$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
+				$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
+				$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
+				
+				$up = trim($this->execSSH($cmdUptime));
+				$up_array = explode(",", $up);
+				$up_array2 = explode("up", $up_array[0]);
+				$this->infos['uptime'] = trim($up_array2[1]);
+				
+				$ramtot = $this->execSSH($cmdRAMtot);
+				$ramfree = $this->execSSH($cmdRAMfree);
+				$rambuffer = $this->execSSH($cmdRAMbuffer);
+				$ramcache = $this->execSSH($cmdRAMcached);
+				$ramfreetotal = $ramfree+$rambuffer+$ramcache;
+				$this->infos['ramused'] = round(($ramtot-$ramfreetotal)/1024).'M';
+				$this->infos['ram'] = round(100-($ramfreetotal*100/$ramtot));
+				$this->infos['ramtot'] = round($ramtot/1024).'M';
+				
+				$hdd_conf = trim($this->execSSH($cmdConfig));
+				$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
+				$hdd_output_array = explode(" ", $hdd_output);
+				foreach ($hdd_output_array as $val) {
+						if(strpos($val, '%') !== false) {
+							$this->infos['hdd'] = str_replace('%', '', trim($val));
+						}
+				}
+				
+				$hdd_vol = trim($this->execSSH($cmdHDDvol));
+				$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
+				$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
+				
+				$this->infos['os'] = $this->execSSH($cmdOS);	
+				$this->infos['status'] = "Up";
+			} else {
+				$this->infos['status'] = "Down";
 			}
 			
-			$hdd_vol = trim($this->execSSH($cmdHDDvol));
-			$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
-			$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
+			$this->updateInfo();
 			
-			$this->infos['os'] = $this->execSSH($cmdOS);	
-			$this->infos['status'] = "Up";
-		} else {
-			$this->infos['status'] = "Down";
+			// close SSH
+			$this->disconnect($NAS);
 		}
-		
-		// close SSH
-		$this->disconnect($NAS);
-		
-		$this->updateInfo();
 	}
 	
 	// update HTML
