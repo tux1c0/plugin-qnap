@@ -10,6 +10,9 @@ echo "********************************************************"
 apt-get update
 echo 50 > ${PROGRESS_FILE}
 apt-get install -y php-ssh2
+if [ $? -ne 0 ]; then
+	apt-get install -y libssh2-php
+fi
 echo 60 > ${PROGRESS_FILE}
 apt-get install -y php-snmp
 if [ $? -ne 0 ]; then
