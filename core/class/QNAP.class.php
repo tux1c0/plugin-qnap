@@ -156,14 +156,14 @@ class QNAP extends eqLogic {
 			$this->infos['cpumodel'] = "OID ?";
 			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
 			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion).' Build OID ?';
-			$this->infos['systemp'] = $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion);
-			$this->infos['cputemp'] = $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion);
-			$this->infos['uptime'] = $this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion);
+			$this->infos['systemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion))[0];
+			$this->infos['cputemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion))[0];
+			$this->infos['uptime'] = explode(")", trim($this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion)))[1];
 
 			$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 			$this->infos['ramtot'] = $this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion);
 			$this->infos['ramused'] = $this->infos['ramtot']-$ramfree;
-			$this->infos['ram'] = $this->infos['ramused']*100/$this->infos['ramtot'];
+			$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
 			
 			
 			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
