@@ -63,7 +63,23 @@ class QNAP extends eqLogic {
 	
 	public function preUpdate() {
 		if ($this->getConfiguration('ip') == '') {
-			throw new Exception(__('Le champs IP ne peut etre vide', __FILE__));
+			throw new Exception(__('Le champs IP ne peut pas être vide', __FILE__));
+		}
+		
+		if ($this->getConfiguration('snmp') == '') {
+			throw new Exception(__('Le champs Communauté SNMP ne peut pas être vide', __FILE__));
+		}
+		
+		if ($this->getConfiguration('fullsnmp') == 0) {
+			if ($this->getConfiguration('username') == '') {
+				throw new Exception(__("Le champs SSH Nom d'utilisateur ne peut pas être vide", __FILE__));
+			}
+			if ($this->getConfiguration('password') == '') {
+				throw new Exception(__('Le champs SSH Mot de passe ne peut pas être vide', __FILE__));
+			}
+			if ($this->getConfiguration('portssh') == '') {
+				throw new Exception(__('Le champs Port SSH ne peut pas être vide', __FILE__));
+			}
 		}
 	}
 	
@@ -102,7 +118,6 @@ class QNAP extends eqLogic {
 		$oidCPUinfos = "";
 		$oidRAMtot = "1.3.6.1.4.1.24681.1.2.2.0";
 		$oidRAMfree = "1.3.6.1.4.1.24681.1.2.3.0";
-		$oidHDD = "";
 		$oidOS = "1.3.6.1.4.1.24681.1.2.13.0";
 		$oidModel = "1.3.6.1.4.1.24681.1.2.12.0";
 		$oidVersion = "1.3.6.1.2.1.47.1.1.1.1.9.1";
@@ -138,18 +153,23 @@ class QNAP extends eqLogic {
 
 		if($SNMPonly == 1) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
-			$this->infos['cpumodel'] = $this->execSNMP($IPaddress, $community, $oidCPUinfos, $snmpVersion);
+			$this->infos['cpumodel'] = "OID ?";
 			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
-			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
+			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion).' Build OID ?';
 			$this->infos['systemp'] = $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion);
 			$this->infos['cputemp'] = $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion);
 			$this->infos['uptime'] = $this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion);
-			$this->infos['ramused'] = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
-			$this->infos['ram'] = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
+
+			$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 			$this->infos['ramtot'] = $this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion);
-			$this->infos['hdd'] = $this->execSNMP($IPaddress, $community, $oidHDD, $snmpVersion);
+			$this->infos['ramused'] = $this->infos['ramtot']-$ramfree;
+			$this->infos['ram'] = $this->infos['ramused']*100/$this->infos['ramtot'];
+			
+			
 			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
 			$this->infos['hddtot'] = $this->execSNMP($IPaddress, $community, $oidHDDtotal, $snmpVersion);
+			$this->infos['hdd'] = ($this->infos['hddtot']-$this->infos['hddfree'])*100/$this->infos['hddtot'];
+
 			$this->infos['os'] = $this->execSNMP($IPaddress, $community, $oidOS, $snmpVersion);
 			$this->infos['status'] = "Up";
 			
