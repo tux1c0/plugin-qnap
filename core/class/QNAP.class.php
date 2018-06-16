@@ -61,6 +61,12 @@ class QNAP extends eqLogic {
 		}
 	}
 	
+	public function preUpdate() {
+		if ($this->getConfiguration('ip') == '') {
+			throw new Exception(__('Le champs IP ne peut etre vide', __FILE__));
+		}
+	}
+	
 	public function getQNAPInfo() {
 		// getting configuration
 		$IPaddress = $this->getConfiguration('ip');
@@ -94,21 +100,20 @@ class QNAP extends eqLogic {
 		// oids
 		$oidCPU = "1.3.6.1.4.1.24681.1.2.1.0";
 		$oidCPUinfos = "";
-		$oidRAMtot = "";
-		$oidRAMfree = "";
-		$oidRAMbuffer = "";
-		$oidRAMcached = "";
-		$oidConfig = "";
+		$oidRAMtot = "1.3.6.1.4.1.24681.1.2.2.0";
+		$oidRAMfree = "1.3.6.1.4.1.24681.1.2.3.0";
 		$oidHDD = "";
-		$oidOS = "";
-		$oidModel = "";
-		$oidVersion = "";
+		$oidOS = "1.3.6.1.4.1.24681.1.2.13.0";
+		$oidModel = "1.3.6.1.4.1.24681.1.2.12.0";
+		$oidVersion = "1.3.6.1.2.1.47.1.1.1.1.9.1";
 		$oidBuild = "";
-		$oidSysTemp = "";
-		$oidCPUTemp = "";
-		$oidUptime = "";
-		$oidHDDtotal = "";
-		$oidHDDfree = "";
+		$oidSysTemp = "1.3.6.1.4.1.24681.1.2.6.0";
+		$oidCPUTemp = "1.3.6.1.4.1.24681.1.2.5.0";
+		$oidUptime = "1.3.6.1.2.1.25.1.1.0";
+		$oidHDDtotal = "1.3.6.1.4.1.24681.1.2.17.1.4.1";
+		$oidHDDfree = "1.3.6.1.4.1.24681.1.2.17.1.5.1";
+		$oidHDDTemp = "1.3.6.1.4.1.24681.1.2.11.1.3.";
+		$oidHDDsmart = "1.3.6.1.4.1.24681.1.3.11.1.7.";
 		// commands
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
@@ -128,9 +133,25 @@ class QNAP extends eqLogic {
 		$cmdHDDvol = "getsysinfo sysvolnum";
 		$cmdHDDtotal = "getsysinfo vol_totalsize volume ";
 		$cmdHDDfree = "getsysinfo vol_freesize volume ";
+		$cmdHDDTemp = "getsysinfo hdtmp ";
+		$cmdHDDsmart = "getsysinfo hdsmart ";
 
 		if($SNMPonly == 1) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
+			$this->infos['cpumodel'] = $this->execSNMP($IPaddress, $community, $oidCPUinfos, $snmpVersion);
+			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
+			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
+			$this->infos['systemp'] = $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion);
+			$this->infos['cputemp'] = $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion);
+			$this->infos['uptime'] = $this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion);
+			$this->infos['ramused'] = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
+			$this->infos['ram'] = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
+			$this->infos['ramtot'] = $this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion);
+			$this->infos['hdd'] = $this->execSNMP($IPaddress, $community, $oidHDD, $snmpVersion);
+			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
+			$this->infos['hddtot'] = $this->execSNMP($IPaddress, $community, $oidHDDtotal, $snmpVersion);
+			$this->infos['os'] = $this->execSNMP($IPaddress, $community, $oidOS, $snmpVersion);
+			$this->infos['status'] = "Up";
 			
 			$this->updateInfo();
 		} else {
