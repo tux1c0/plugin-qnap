@@ -65,7 +65,7 @@ class QNAP extends eqLogic {
 		}
     }
 	
-	public function preSave() {
+	public function preUpdate() {
 		if ($this->getConfiguration('ip') == '') {
 			throw new Exception(__('Le champs IP ne peut pas être vide', __FILE__));
 		}
@@ -580,7 +580,9 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setSubType('other');
 			$QNAPCmd->save();
 		}
-
+	}
+	
+	public function postUpdate() {
 		for($i=0; $i<$this->nbHDD; $i++) {
 			$QNAPCmd = $this->getCmd(null, 'hdd'.($i+1).'temp');
 			if (!is_object($QNAPCmd)) {
@@ -606,9 +608,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->save();
 			}
 		}
-	}
-	
-	public function postUpdate() {
+		
 		$cmd = $this->getCmd(null, 'refresh');
 		if (is_object($cmd)) { 
 			 $cmd->execCmd();
