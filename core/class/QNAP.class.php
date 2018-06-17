@@ -188,8 +188,8 @@ class QNAP extends eqLogic {
 				$this->infos['hdd'.$i.'temp'] = '';
 				$this->infos['hdd'.$i.'smart'] = '';
 				
-				$this->infos['hdd'.$i.'temp'] = $this->execSNMP($IPaddress, $community, $oidHDDTemp, $snmpVersion);
-				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart, $snmpVersion);
+				$this->infos['hdd'.$i.'temp'] = $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion);
+				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart.$i, $snmpVersion);
 				
 			}
 			
@@ -244,9 +244,8 @@ class QNAP extends eqLogic {
 					$this->infos['hdd'.$i.'temp'] = '';
 					$this->infos['hdd'.$i.'smart'] = '';
 					
-					$this->infos['hdd'.$i.'temp'] = trim($this->execSSH($cmdHDDTemp));
-					$this->infos['hdd'.$i.'smart'] = trim($this->execSSH($cmdHDDsmart));
-					
+					$this->infos['hdd'.$i.'temp'] = trim($this->execSSH($cmdHDDTemp.$i));
+					$this->infos['hdd'.$i.'smart'] = trim($this->execSSH($cmdHDDsmart.$i));
 				}
 				
 				$this->infos['os'] = $this->execSSH($cmdOS);	
