@@ -388,6 +388,28 @@ class QNAP extends eqLogic {
 		$this->disconnect($NAS);
 	}
 	
+	public function toHtml($_version = 'dashboard') {
+		$replace = $this->preToHtml($_version);
+		if (!is_array($replace)) {
+		  return $replace;
+		}
+		$version = jeedom::versionAlias($_version);
+		if ($this->getDisplay('hideOn' . $version) == 1) {
+		  return '';
+		}
+
+		foreach ($this->getCmd('info') as $cmd) {
+		  $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
+		  $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+		  $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+		  $replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
+		  if ($cmd->getIsHistorized() == 1) {
+			$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+		  }
+		}
+		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
+	  }
+	
 		/*     * *********************Methode d'instance************************* */
 
 	public function postSave() {
