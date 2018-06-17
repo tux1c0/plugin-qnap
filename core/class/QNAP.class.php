@@ -177,6 +177,7 @@ class QNAP extends eqLogic {
 			$this->infos['systemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion))[0];
 			$this->infos['cputemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion))[0];
 			$this->infos['uptime'] = explode(")", trim($this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion)))[1];
+			$this->infos['uptime'] = explode(",", $this->infos['uptime'])[0];
 
 			$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 			$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
@@ -188,7 +189,7 @@ class QNAP extends eqLogic {
 				$this->infos['hdd'.$i.'temp'] = '';
 				$this->infos['hdd'.$i.'smart'] = '';
 				
-				$this->infos['hdd'.$i.'temp'] = $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion);
+				$this->infos['hdd'.$i.'temp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion))[1];
 				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart.$i, $snmpVersion);
 				
 			}
@@ -244,7 +245,7 @@ class QNAP extends eqLogic {
 					$this->infos['hdd'.$i.'temp'] = '';
 					$this->infos['hdd'.$i.'smart'] = '';
 					
-					$this->infos['hdd'.$i.'temp'] = trim($this->execSSH($cmdHDDTemp.$i));
+					$this->infos['hdd'.$i.'temp'] = explode("/", trim($this->execSSH($cmdHDDTemp.$i)))[1];
 					$this->infos['hdd'.$i.'smart'] = trim($this->execSSH($cmdHDDsmart.$i));
 				}
 				
