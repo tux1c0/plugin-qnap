@@ -183,8 +183,8 @@ class QNAP extends eqLogic {
 			$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
 			$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
 			$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
-			$this->infos['ramtot'] = $this->infos['ramtot'].'MB';
-			$this->infos['ramused'] = $this->infos['ramused'].'MB';
+			$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
+			$this->infos['ramused'] = $this->infos['ramused'].' MB';
 			
 			$nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
 			for($i=1; $i<=$nbHDDnas; $i++) {
@@ -233,8 +233,8 @@ class QNAP extends eqLogic {
 				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
 				$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
 				$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
-				$this->infos['ramtot'] = $this->infos['ramtot'].'MB';
-				$this->infos['ramused'] = $this->infos['ramused'].'MB';
+				$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
+				$this->infos['ramused'] = $this->infos['ramused'].' MB';
 			
 				$hdd_conf = trim($this->execSSH($cmdConfig));
 				$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
