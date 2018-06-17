@@ -170,7 +170,7 @@ class QNAP extends eqLogic {
 		$cmdHDDnb = "getsysinfo hdnum";
 
 		if($SNMPonly == 1) {
-			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
+			$this->infos['cpu'] = round($this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion));
 			$this->infos['cpumodel'] = "Unknown";
 			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
 			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
