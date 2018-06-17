@@ -581,9 +581,31 @@ class QNAP extends eqLogic {
 			$QNAPCmd->save();
 		}
 
-		/*if ($this->getIsEnable()) {
-			$this->getQNAPInfo();
-		}*/
+		for($i=0; $i<$this->nbHDD; $i++) {
+			$QNAPCmd = $this->getCmd(null, 'hdd'.($i+1).'temp');
+			if (!is_object($QNAPCmd)) {
+				log::add('QNAP', 'debug', 'hdd'.($i+1).'temp');
+				$QNAPCmd = new qnapCmd();
+				$QNAPCmd->setName(__('HDD'.($i+1).' Température', __FILE__));
+				$QNAPCmd->setEqLogic_id($this->getId());
+				$QNAPCmd->setLogicalId('hdd'.($i+1).'temp');
+				$QNAPCmd->setType('info');
+				$QNAPCmd->setSubType('string');
+				$QNAPCmd->save();
+			}
+			
+			$QNAPCmd = $this->getCmd(null, 'hdd'.($i+1).'smart');
+			if (!is_object($QNAPCmd)) {
+				log::add('QNAP', 'debug', 'hdd'.($i+1).'smart');
+				$QNAPCmd = new qnapCmd();
+				$QNAPCmd->setName(__('HDD'.($i+1).' SMART', __FILE__));
+				$QNAPCmd->setEqLogic_id($this->getId());
+				$QNAPCmd->setLogicalId('hdd'.($i+1).'smart');
+				$QNAPCmd->setType('info');
+				$QNAPCmd->setSubType('string');
+				$QNAPCmd->save();
+			}
+		}
 	}
 	
 	public function postUpdate() {
