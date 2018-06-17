@@ -54,16 +54,16 @@ class QNAP extends eqLogic {
 	}
 	
 	public static function cron15() {
-		  foreach (self::byType('QNAP') as $qnap) {
-			  if ($qnap->getIsEnable() == 1) {
-				  $cmd = $qnap->getCmd(null, 'refresh');
-				  if (!is_object($cmd)) {
-				  	continue; 
-				  }
-				  $cmd->execCmd(); post
-			  }
-		  }
-      }
+		foreach (self::byType('QNAP') as $qnap) {
+			if ($qnap->getIsEnable() == 1) {
+				$cmd = $qnap->getCmd(null, 'refresh');
+				if (!is_object($cmd)) {
+					continue; 
+				}
+				$cmd->execCmd();
+			}
+		}
+    }
 	
 	public function preSave() {
 		if ($this->getConfiguration('ip') == '') {
