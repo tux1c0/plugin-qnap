@@ -4,7 +4,7 @@
 	"description" : "Plugin pour la supervision de NAS QNAP",
 	"licence" : "AGPL",
 	"author" : "Tux1c0",
-	"require" : "3.0",
+	"require" : "3.2",
 	"category" : "monitoring",
 	"hasDependency" : true,
 	"documentation" : "https://tux1c0.github.io/plugin-qnap/#language#/"

@@ -38,30 +38,21 @@ class QNAP extends eqLogic {
 		return array('script' => dirname(__FILE__) . '/../../resources/install.sh ' . jeedom::getTmpFolder('QNAP') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
 	}
 
-	public static function update($_eqLogic_id = null) {
-		if ($_eqLogic_id == null) {
-			$eqLogics = eqLogic::byType('QNAP');
-		} else {
-			$eqLogics = array(eqLogic::byId($_eqLogic_id));
-		}
-		foreach ($eqLogics as $qnap) {
-			$autorefresh = "*/15 * * * *";
-			try {
-				$c = new Cron\CronExpression($autorefresh, new Cron\FieldFactory);
-				if ($c->isDue()) {
-					try {
-						$qnap->getQNAPInfo();
-					} catch (Exception $e) {
-						log::add('QNAP', 'error', $e->getMessage());
-					}
-				}
-			} catch (Exception $exc) {
-				log::add('QNAP', 'error', __('Expression cron non valide pour ', __FILE__) . $qnap->getHumanName() . ' : ' . $autorefresh);
-			}
-		}
-	}
+
 	
-	public function preUpdate() {
+	public static function cron15() {
+		  foreach (self::byType('QNAP') as $qnap) {
+			  if ($qnap->getIsEnable() == 1) {
+				  $cmd = $qnap->getCmd(null, 'refresh');
+				  if (!is_object($cmd)) {
+				  	continue; 
+				  }
+				  $cmd->execCmd(); post
+			  }
+		  }
+      }
+	
+	public function preSave() {
 		if ($this->getConfiguration('ip') == '') {
 			throw new Exception(__('Le champs IP ne peut pas être vide', __FILE__));
 		}
@@ -81,6 +72,18 @@ class QNAP extends eqLogic {
 				throw new Exception(__('Le champs Port SSH ne peut pas être vide', __FILE__));
 			}
 		}
+		
+		$this->nbHDD = $this->getQNAPnbHDD();
+	}
+
+	public function getQNAPnbHDD() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$community = $this->getConfiguration('snmp');
+		$snmpVersion = $this->getConfiguration('snmpversion');
+		$NAS = $this->getName();
+		
+		return $this->execSNMP($IPaddress, $community, "1.3.6.1.4.1.24681.1.2.10.0", $snmpVersion);		
 	}
 	
 	public function getQNAPInfo() {
@@ -565,10 +568,17 @@ class QNAP extends eqLogic {
 			$QNAPCmd->save();
 		}
 
-		if ($this->getIsEnable()) {
+		/*if ($this->getIsEnable()) {
 			$this->getQNAPInfo();
-		}
+		}*/
 	}
+	
+	public function postUpdate() {
+		$cmd = $this->getCmd(null, 'refresh');
+		if (is_object($cmd)) { 
+			 $cmd->execCmd();
+		}
+    }
 	
 }
 
