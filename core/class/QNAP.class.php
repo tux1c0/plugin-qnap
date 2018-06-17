@@ -38,7 +38,20 @@ class QNAP extends eqLogic {
 		return array('script' => dirname(__FILE__) . '/../../resources/install.sh ' . jeedom::getTmpFolder('QNAP') . '/dependance', 'log' => log::getPathToLog(__CLASS__ . '_update'));
 	}
 
-
+	public static function update($_eqLogic_id = null) {
+		if ($_eqLogic_id == null) {
+			$eqLogics = eqLogic::byType('QNAP');
+		} else {
+			$eqLogics = array(eqLogic::byId($_eqLogic_id));
+		}
+		foreach ($eqLogics as $qnap) {
+			try {
+				$qnap->getQNAPInfo();
+			} catch (Exception $e) {
+				log::add('QNAP', 'error', $e->getMessage());
+			}
+		}
+	}
 	
 	public static function cron15() {
 		  foreach (self::byType('QNAP') as $qnap) {
