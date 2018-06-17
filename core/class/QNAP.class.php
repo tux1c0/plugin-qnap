@@ -145,6 +145,7 @@ class QNAP extends eqLogic {
 		$oidHDDfree = "1.3.6.1.4.1.24681.1.2.17.1.5.1";
 		$oidHDDTemp = "1.3.6.1.4.1.24681.1.2.11.1.3.";
 		$oidHDDsmart = "1.3.6.1.4.1.24681.1.3.11.1.7.";
+		$oidHDDnb = "1.3.6.1.4.1.24681.1.2.10.0";
 		// commands
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
@@ -166,6 +167,7 @@ class QNAP extends eqLogic {
 		$cmdHDDfree = "getsysinfo vol_freesize volume ";
 		$cmdHDDTemp = "getsysinfo hdtmp ";
 		$cmdHDDsmart = "getsysinfo hdsmart ";
+		$cmdHDDnb = "getsysinfo hdnum";
 
 		if($SNMPonly == 1) {
 			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
@@ -177,10 +179,19 @@ class QNAP extends eqLogic {
 			$this->infos['uptime'] = explode(")", trim($this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion)))[1];
 
 			$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
-			$this->infos['ramtot'] = $this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion);
-			$this->infos['ramused'] = $this->infos['ramtot']-$ramfree;
+			$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
+			$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
 			$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
 			
+			$nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
+			for($i=1; $i<=$nbHDDnas; $i++) {
+				$this->infos['hdd'.$i.'temp'] = '';
+				$this->infos['hdd'.$i.'smart'] = '';
+				
+				$this->infos['hdd'.$i.'temp'] = $this->execSNMP($IPaddress, $community, $oidHDDTemp, $snmpVersion);
+				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart, $snmpVersion);
+				
+			}
 			
 			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
 			$this->infos['hddtot'] = $this->execSNMP($IPaddress, $community, $oidHDDtotal, $snmpVersion);
@@ -227,6 +238,16 @@ class QNAP extends eqLogic {
 				$hdd_vol = trim($this->execSSH($cmdHDDvol));
 				$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
 				$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
+				
+				$nbHDDnas = trim($this->execSSH($cmdHDDnb));
+				for($i=1; $i<=$nbHDDnas; $i++) {
+					$this->infos['hdd'.$i.'temp'] = '';
+					$this->infos['hdd'.$i.'smart'] = '';
+					
+					$this->infos['hdd'.$i.'temp'] = trim($this->execSSH($cmdHDDTemp));
+					$this->infos['hdd'.$i.'smart'] = trim($this->execSSH($cmdHDDsmart));
+					
+				}
 				
 				$this->infos['os'] = $this->execSSH($cmdOS);	
 				$this->infos['status'] = "Up";
@@ -583,26 +604,26 @@ class QNAP extends eqLogic {
 	}
 	
 	public function postUpdate() {
-		for($i=0; $i<$this->nbHDD; $i++) {
-			$QNAPCmd = $this->getCmd(null, 'hdd'.($i+1).'temp');
+		for($i=1; $i<=$this->nbHDD; $i++) {
+			$QNAPCmd = $this->getCmd(null, 'hdd'.$i.'temp');
 			if (!is_object($QNAPCmd)) {
-				log::add('QNAP', 'debug', 'hdd'.($i+1).'temp');
+				log::add('QNAP', 'debug', 'hdd'.$i.'temp');
 				$QNAPCmd = new qnapCmd();
-				$QNAPCmd->setName(__('HDD'.($i+1).' Température', __FILE__));
+				$QNAPCmd->setName(__('HDD'.$i.' Température', __FILE__));
 				$QNAPCmd->setEqLogic_id($this->getId());
-				$QNAPCmd->setLogicalId('hdd'.($i+1).'temp');
+				$QNAPCmd->setLogicalId('hdd'.$i.'temp');
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('string');
 				$QNAPCmd->save();
 			}
 			
-			$QNAPCmd = $this->getCmd(null, 'hdd'.($i+1).'smart');
+			$QNAPCmd = $this->getCmd(null, 'hdd'.$i.'smart');
 			if (!is_object($QNAPCmd)) {
-				log::add('QNAP', 'debug', 'hdd'.($i+1).'smart');
+				log::add('QNAP', 'debug', 'hdd'.$i.'smart');
 				$QNAPCmd = new qnapCmd();
-				$QNAPCmd->setName(__('HDD'.($i+1).' SMART', __FILE__));
+				$QNAPCmd->setName(__('HDD'.$i.' SMART', __FILE__));
 				$QNAPCmd->setEqLogic_id($this->getId());
-				$QNAPCmd->setLogicalId('hdd'.($i+1).'smart');
+				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('string');
 				$QNAPCmd->save();
