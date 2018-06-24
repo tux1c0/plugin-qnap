@@ -186,8 +186,8 @@ class QNAP extends eqLogic {
 			$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
 			$this->infos['ramused'] = $this->infos['ramused'].' MB';
 			
-			$nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
-			for($i=1; $i<=$nbHDDnas; $i++) {
+			$this->nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
+			for($i=1; $i<=$this->nbHDDnas; $i++) {
 				$this->infos['hdd'.$i.'temp'] = '';
 				$this->infos['hdd'.$i.'smart'] = '';
 				
@@ -249,8 +249,8 @@ class QNAP extends eqLogic {
 				$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
 				$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
 				
-				$nbHDDnas = trim($this->execSSH($cmdHDDnb));
-				for($i=1; $i<=$nbHDDnas; $i++) {
+				$this->nbHDDnas = trim($this->execSSH($cmdHDDnb));
+				for($i=1; $i<=$this->nbHDDnas; $i++) {
 					$this->infos['hdd'.$i.'temp'] = '';
 					$this->infos['hdd'.$i.'smart'] = '';
 					
@@ -397,16 +397,39 @@ class QNAP extends eqLogic {
 		if ($this->getDisplay('hideOn' . $version) == 1) {
 		  return '';
 		}
+		
+		$hddsmart = '';
+		$hddtemp = '';
 
 		foreach ($this->getCmd('info') as $cmd) {
-		  $replace['#' . $cmd->getLogicalId() . '_history#'] = '';
-		  $replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-		  $replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
-		  $replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
-		  if ($cmd->getIsHistorized() == 1) {
-			$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
-		  }
+			$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
+			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+			$replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
+			if ($cmd->getIsHistorized() == 1) {
+				$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+			}
+			if ($cmd->getIsVisible() == 0) {
+				$replace['#' . $cmd->getLogicalId() . '_display#'] = 'none';
+			}
+			if(strpos($cmd->getLogicalId(), 'smart') !== false) {
+				$hddsmart = $hddsmart.' '.$cmd->execCmd();
+			}
+			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
+				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
+					$hddtemp = $hddtemp.' '.$cmd->execCmd();
+				}
+			}
 		}
+		
+		// traitement du smart
+		$hddsmart = str_replace(' ', '/', trim($hddsmart));
+		$replace['#hddsmart#'] = $hddsmart;
+		
+		// traitement de la temp
+		$hddtemp = str_replace(' ', '/', trim($hddtemp));
+		$replace['#hddtemp#'] = $hddtemp;
+		
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
 	  }
 	

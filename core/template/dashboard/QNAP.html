@@ -1,6 +1,31 @@
 <div id="plugin_container" class="eqLogic-widget eqLogic allowResize refresh" style="width:#width#;height:#height#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#; #style#" data-category="" data-eqLogic_id="#id#" data-version="#version#" >
 	<center class="widget-name"><strong><a href="#eqLink#" style="font-size : 1.1em;#hideEqLogicName#">#name_display#</strong></a>
-		<span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span>
+		<span title="#object_name_collect#" style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span>
+		<span title="Eteindre l'équipement" class="poweroff tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_poweroff_id#" style="float: right">
+			<a class="action" style="cursor: pointer;"><i class="fa fa-power-off" style="font-size : 1.0em;padding-right:10px"></i></a>
+
+		<script>
+		$('.poweroff[data-cmd_id=#cmd_poweroff_id#] .action').on('click', function() {
+			bootbox.confirm('Etes-vous sûr de vouloir éteindre l\'équipement #name# ?', function (result) {
+				if (result) {
+					jeedom.cmd.execute({id: '#cmd_poweroff_id#'});
+				}
+			});
+		});
+		</script>
+		</span>
+		<span title="Redémarrer l'équipement" class="reboot tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_reboot_id#" style="float: right">
+			<a class="action" style="cursor: pointer;"><i class="fa fa-repeat" style="font-size : 1.0em;padding-right:10px"></i></a>
+		<script>
+		$('.reboot[data-cmd_id=#cmd_reboot_id#] .action').on('click', function() {
+			bootbox.confirm('Etes-vous sûr de vouloir redémarrer l\'équipement #name# ?', function (result) {
+				if (result) {
+					jeedom.cmd.execute({id: '#cmd_reboot_id#'});
+				}
+			});
+		});
+		</script>
+		</span>
 	</center>
 
 	<div class="tooltips" data-cmd_id="#hddtot_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #hddtot_display#;">
@@ -14,6 +39,14 @@
 	<div class="tooltips" data-cmd_id="#hdd_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hdd_display#;">
 			<span title="Pourcentage utilisation" class="fa fa-hdd-o" style="min-width:15px"></span>
 			<span> Utilisé #hdd#%</span>
+	</div>
+	<div class="tooltips" data-cmd_id="#hddsmart_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddsmart_display#;">
+			<span title="Etat SMART" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> SMART #hddsmart#</span>
+	</div>
+	<div class="tooltips" data-cmd_id="#hddtemp_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
+			<span title="Température ds disques" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> Température #hddtemp#</span>
 	</div>
 	
 	<div class="tooltips" data-cmd_id="#ramtot_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #ramtot_display#;">
