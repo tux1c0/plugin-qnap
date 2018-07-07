@@ -417,9 +417,13 @@ class QNAP extends eqLogic {
 			}
 			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
 				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
-					$hddtemp = $hddtemp.' '.$cmd->execCmd();
+					$hddtemp = $hddtemp.' '.str_replace(' ', '/', $cmd->execCmd());
 				}
 			}
+		}
+		
+		foreach ($this->getCmd('action') as $cmd) {
+			$replace['#cmd_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
 		}
 		
 		// traitement du smart

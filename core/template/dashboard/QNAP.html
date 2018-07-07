@@ -1,8 +1,17 @@
 <div id="plugin_container" class="eqLogic-widget eqLogic allowResize refresh" style="width:#width#;height:#height#;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#; #style#" data-category="" data-eqLogic_id="#id#" data-version="#version#" >
 	<center class="widget-name"><strong><a href="#eqLink#" style="font-size : 1.1em;#hideEqLogicName#">#name_display#</strong></a>
 		<span title="#object_name_collect#" style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span>
+		<span title="Rafaîchir" class="refresh tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_refresh_id#" style="float: right">
+			<a class="action" style="cursor: pointer;"><i class="fa fa-repeat" style="font-size : 1.0em;padding-right:10px"></i></a>
+
+		<script>
+		$('.poweroff[data-cmd_id=#cmd_refresh_id#] .action').on('click', function() {
+			jeedom.cmd.execute({id: '#cmd_refresh_id#'});
+		});
+		</script>
+		</span>
 		<span title="Eteindre l'équipement" class="poweroff tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_poweroff_id#" style="float: right">
-			<a class="action" style="cursor: pointer;"><i class="fa fa-power-off" style="font-size : 1.0em;padding-right:10px"></i></a>
+			<a class="action" style="cursor: pointer;"><i class="fa fa-stop" style="font-size : 1.0em;padding-right:10px"></i></a>
 
 		<script>
 		$('.poweroff[data-cmd_id=#cmd_poweroff_id#] .action').on('click', function() {
@@ -15,7 +24,7 @@
 		</script>
 		</span>
 		<span title="Redémarrer l'équipement" class="reboot tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_reboot_id#" style="float: right">
-			<a class="action" style="cursor: pointer;"><i class="fa fa-repeat" style="font-size : 1.0em;padding-right:10px"></i></a>
+			<a class="action" style="cursor: pointer;"><i class="fa fa-power-off" style="font-size : 1.0em;padding-right:10px"></i></a>
 		<script>
 		$('.reboot[data-cmd_id=#cmd_reboot_id#] .action').on('click', function() {
 			bootbox.confirm('Etes-vous sûr de vouloir redémarrer l\'équipement #name# ?', function (result) {
