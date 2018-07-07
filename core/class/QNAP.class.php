@@ -171,7 +171,7 @@ class QNAP extends eqLogic {
 
 		if($SNMPonly == 1) {
 			$this->infos['cpu'] = round($this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion));
-			$this->infos['cpumodel'] = "Unknown";
+			$this->infos['cpumodel'] = "NA in SNMP only";
 			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
 			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
 			$this->infos['systemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion))[0];
@@ -198,7 +198,7 @@ class QNAP extends eqLogic {
 			
 			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
 			$this->infos['hddtot'] = $this->execSNMP($IPaddress, $community, $oidHDDtotal, $snmpVersion);
-			$this->infos['hdd'] = ($this->infos['hddtot']-$this->infos['hddfree'])*100/$this->infos['hddtot'];
+			$this->infos['hdd'] = round(($this->infos['hddtot']-$this->infos['hddfree'])*100/$this->infos['hddtot']);
 
 			$this->infos['os'] = $this->execSNMP($IPaddress, $community, $oidOS, $snmpVersion);
 			$this->infos['status'] = "Up";
@@ -220,15 +220,6 @@ class QNAP extends eqLogic {
 				$up_array2 = explode("up", $up_array[0]);
 				$this->infos['uptime'] = trim($up_array2[1]);
 				
-				/*$ramtot = $this->execSSH($cmdRAMtot);
-				$ramfree = $this->execSSH($cmdRAMfree);
-				$rambuffer = $this->execSSH($cmdRAMbuffer);
-				$ramcache = $this->execSSH($cmdRAMcached);
-				$ramfreetotal = $ramfree+$rambuffer+$ramcache;
-				$this->infos['ramused'] = round(($ramtot-$ramfreetotal)/1024).'M';
-				$this->infos['ram'] = round(100-($ramfreetotal*100/$ramtot));
-				$this->infos['ramtot'] = round($ramtot/1024).'M';
-				*/
 				$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
 				$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
@@ -417,7 +408,7 @@ class QNAP extends eqLogic {
 			}
 			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
 				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
-					$hddtemp = $hddtemp.' '.str_replace(' ', '/', $cmd->execCmd());
+					$hddtemp = $hddtemp.' '.str_replace(' ', '', $cmd->execCmd());
 				}
 			}
 		}
