@@ -45,20 +45,58 @@ class QNAP extends eqLogic {
 			$eqLogics = array(eqLogic::byId($_eqLogic_id));
 		}
 		foreach ($eqLogics as $qnap) {
-			$autorefresh = "*/15 * * * *";
 			try {
-				$c = new Cron\CronExpression($autorefresh, new Cron\FieldFactory);
-				if ($c->isDue()) {
-					try {
-						$qnap->getQNAPInfo();
-					} catch (Exception $e) {
-						log::add('QNAP', 'error', $e->getMessage());
-					}
-				}
-			} catch (Exception $exc) {
-				log::add('QNAP', 'error', __('Expression cron non valide pour ', __FILE__) . $qnap->getHumanName() . ' : ' . $autorefresh);
+				$qnap->getQNAPInfo();
+			} catch (Exception $e) {
+				log::add('QNAP', 'error', $e->getMessage());
 			}
 		}
+	}
+	
+	public static function cron15() {
+		foreach (self::byType('QNAP') as $qnap) {
+			if ($qnap->getIsEnable() == 1) {
+				$cmd = $qnap->getCmd(null, 'refresh');
+				if (!is_object($cmd)) {
+					continue; 
+				}
+				$cmd->execCmd();
+			}
+		}
+    }
+	
+	public function preUpdate() {
+		if ($this->getConfiguration('ip') == '') {
+			throw new Exception(__('Le champs IP ne peut pas être vide', __FILE__));
+		}
+		
+		if ($this->getConfiguration('snmp') == '') {
+			throw new Exception(__('Le champs Communauté SNMP ne peut pas être vide', __FILE__));
+		}
+		
+		if ($this->getConfiguration('fullsnmp') == 0) {
+			if ($this->getConfiguration('username') == '') {
+				throw new Exception(__("Le champs SSH Nom d'utilisateur ne peut pas être vide", __FILE__));
+			}
+			if ($this->getConfiguration('password') == '') {
+				throw new Exception(__('Le champs SSH Mot de passe ne peut pas être vide', __FILE__));
+			}
+			if ($this->getConfiguration('portssh') == '') {
+				throw new Exception(__('Le champs Port SSH ne peut pas être vide', __FILE__));
+			}
+		}
+		
+		$this->nbHDD = $this->getQNAPnbHDD();
+	}
+
+	public function getQNAPnbHDD() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$community = $this->getConfiguration('snmp');
+		$snmpVersion = $this->getConfiguration('snmpversion');
+		$NAS = $this->getName();
+		
+		return $this->execSNMP($IPaddress, $community, "1.3.6.1.4.1.24681.1.2.10.0", $snmpVersion);		
 	}
 	
 	public function getQNAPInfo() {
@@ -69,6 +107,7 @@ class QNAP extends eqLogic {
 		$port = $this->getConfiguration('portssh');
 		$community = $this->getConfiguration('snmp');
 		$snmpVersion = $this->getConfiguration('snmpversion');
+		$SNMPonly = $this->getConfiguration('fullsnmp');
 		$NAS = $this->getName();
 		
 		// var
@@ -90,8 +129,24 @@ class QNAP extends eqLogic {
 			'uptime'	=> ''
 		);
 
+		// oids
+		$oidCPU = "1.3.6.1.4.1.24681.1.2.1.0";
+		$oidCPUinfos = "";
+		$oidRAMtot = "1.3.6.1.4.1.24681.1.2.2.0";
+		$oidRAMfree = "1.3.6.1.4.1.24681.1.2.3.0";
+		$oidOS = "1.3.6.1.4.1.24681.1.2.13.0";
+		$oidModel = "1.3.6.1.4.1.24681.1.2.12.0";
+		$oidVersion = "1.3.6.1.2.1.47.1.1.1.1.9.1";
+		$oidBuild = "";
+		$oidSysTemp = "1.3.6.1.4.1.24681.1.2.6.0";
+		$oidCPUTemp = "1.3.6.1.4.1.24681.1.2.5.0";
+		$oidUptime = "1.3.6.1.2.1.25.1.1.0";
+		$oidHDDtotal = "1.3.6.1.4.1.24681.1.2.17.1.4.1";
+		$oidHDDfree = "1.3.6.1.4.1.24681.1.2.17.1.5.1";
+		$oidHDDTemp = "1.3.6.1.4.1.24681.1.2.11.1.3.";
+		$oidHDDsmart = "1.3.6.1.4.1.24681.1.3.11.1.7.";
+		$oidHDDnb = "1.3.6.1.4.1.24681.1.2.10.0";
 		// commands
-		$cmdCPU = "1.3.6.1.4.1.24681.1.2.1.0";
 		$cmdCPUinfos = "cat /proc/cpuinfo |  grep '^model name' | head -1 | awk '{ print $4,$5,$6,$7,$9 }'";
 		$cmdRAMtot = "cat /proc/meminfo |  grep '^MemTotal' | awk '{ print $2 }'";
 		$cmdRAMfree = "cat /proc/meminfo |  grep '^MemFree' | awk '{ print $2 }'";
@@ -110,53 +165,101 @@ class QNAP extends eqLogic {
 		$cmdHDDvol = "getsysinfo sysvolnum";
 		$cmdHDDtotal = "getsysinfo vol_totalsize volume ";
 		$cmdHDDfree = "getsysinfo vol_freesize volume ";
+		$cmdHDDTemp = "getsysinfo hdtmp ";
+		$cmdHDDsmart = "getsysinfo hdsmart ";
+		$cmdHDDnb = "getsysinfo hdnum";
 
-		// SSH connection & launch commands
-		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
-			$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $cmdCPU, $snmpVersion);
-			$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
-			$this->infos['model'] = trim($this->execSSH($cmdModel));
-			$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
-			$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
-			$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
+		if($SNMPonly == 1) {
+			$this->infos['cpu'] = round($this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion));
+			$this->infos['cpumodel'] = "NA in SNMP only";
+			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
+			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
+			$this->infos['systemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion))[0];
+			$this->infos['cputemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion))[0];
+			$this->infos['uptime'] = explode(")", trim($this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion)))[1];
+			$this->infos['uptime'] = explode(",", $this->infos['uptime'])[0];
+
+			$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
+			$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
+			$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
+			$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
+			$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
+			$this->infos['ramused'] = $this->infos['ramused'].' MB';
 			
-			$up = trim($this->execSSH($cmdUptime));
-			$up_array = explode(",", $up);
-			$up_array2 = explode("up", $up_array[0]);
-			$this->infos['uptime'] = trim($up_array2[1]);
-			
-			$ramtot = $this->execSSH($cmdRAMtot);
-			$ramfree = $this->execSSH($cmdRAMfree);
-			$rambuffer = $this->execSSH($cmdRAMbuffer);
-			$ramcache = $this->execSSH($cmdRAMcached);
-			$ramfreetotal = $ramfree+$rambuffer+$ramcache;
-			$this->infos['ramused'] = round(($ramtot-$ramfreetotal)/1024).'M';
-			$this->infos['ram'] = round(100-($ramfreetotal*100/$ramtot));
-			$this->infos['ramtot'] = round($ramtot/1024).'M';
-			
-			$hdd_conf = trim($this->execSSH($cmdConfig));
-			$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
-			$hdd_output_array = explode(" ", $hdd_output);
-			foreach ($hdd_output_array as $val) {
-					if(strpos($val, '%') !== false) {
-						$this->infos['hdd'] = str_replace('%', '', trim($val));
-					}
+			$this->nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
+			for($i=1; $i<=$this->nbHDDnas; $i++) {
+				$this->infos['hdd'.$i.'temp'] = '';
+				$this->infos['hdd'.$i.'smart'] = '';
+				
+				$this->infos['hdd'.$i.'temp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion))[0];
+				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart.$i, $snmpVersion);
+				
 			}
 			
-			$hdd_vol = trim($this->execSSH($cmdHDDvol));
-			$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
-			$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
-			
-			$this->infos['os'] = $this->execSSH($cmdOS);	
+			$this->infos['hddfree'] = $this->execSNMP($IPaddress, $community, $oidHDDfree, $snmpVersion);
+			$this->infos['hddtot'] = $this->execSNMP($IPaddress, $community, $oidHDDtotal, $snmpVersion);
+			$this->infos['hdd'] = round(($this->infos['hddtot']-$this->infos['hddfree'])*100/$this->infos['hddtot']);
+
+			$this->infos['os'] = $this->execSNMP($IPaddress, $community, $oidOS, $snmpVersion);
 			$this->infos['status'] = "Up";
+			
+			$this->updateInfo();
 		} else {
-			$this->infos['status'] = "Down";
+			// SSH connection & launch commands
+			if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
+				$this->infos['cpu'] = $this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion);
+				
+				$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
+				$this->infos['model'] = trim($this->execSSH($cmdModel));
+				$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
+				$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
+				$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
+				
+				$up = trim($this->execSSH($cmdUptime));
+				$up_array = explode(",", $up);
+				$up_array2 = explode("up", $up_array[0]);
+				$this->infos['uptime'] = trim($up_array2[1]);
+				
+				$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
+				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
+				$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
+				$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
+				$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
+				$this->infos['ramused'] = $this->infos['ramused'].' MB';
+			
+				$hdd_conf = trim($this->execSSH($cmdConfig));
+				$hdd_output = $this->execSSH($cmdHDD.$hdd_conf.$cmdHDDgrep."'".$hdd_conf."'");
+				$hdd_output_array = explode(" ", $hdd_output);
+				foreach ($hdd_output_array as $val) {
+						if(strpos($val, '%') !== false) {
+							$this->infos['hdd'] = str_replace('%', '', trim($val));
+						}
+				}
+				
+				$hdd_vol = trim($this->execSSH($cmdHDDvol));
+				$this->infos['hddtot'] = trim($this->execSSH($cmdHDDtotal.$hdd_vol));
+				$this->infos['hddfree'] = trim($this->execSSH($cmdHDDfree.$hdd_vol));
+				
+				$this->nbHDDnas = trim($this->execSSH($cmdHDDnb));
+				for($i=1; $i<=$this->nbHDDnas; $i++) {
+					$this->infos['hdd'.$i.'temp'] = '';
+					$this->infos['hdd'.$i.'smart'] = '';
+					
+					$this->infos['hdd'.$i.'temp'] = explode("/", trim($this->execSSH($cmdHDDTemp.$i)))[0];
+					$this->infos['hdd'.$i.'smart'] = trim($this->execSSH($cmdHDDsmart.$i));
+				}
+				
+				$this->infos['os'] = $this->execSSH($cmdOS);	
+				$this->infos['status'] = "Up";
+			} else {
+				$this->infos['status'] = "Down";
+			}
+			
+			$this->updateInfo();
+			
+			// close SSH
+			$this->disconnect($NAS);
 		}
-		
-		// close SSH
-		$this->disconnect($NAS);
-		
-		$this->updateInfo();
 	}
 	
 	// update HTML
@@ -241,6 +344,89 @@ class QNAP extends eqLogic {
 			log::add('QNAP', 'error', 'disconnect retourne '.$e);
 		}
     }
+	
+	public function reboot() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$login = $this->getConfiguration('username');
+		$pwd = $this->getConfiguration('password');
+		$NAS = $this->getName();
+		$cmd = "reboot";
+		
+		// SSH connection & launch commands
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+			$this->execSSH($cmd);
+		}
+		
+		// close SSH
+		$this->disconnect($NAS);
+	}
+	
+	public function halt() {
+		// getting configuration
+		$IPaddress = $this->getConfiguration('ip');
+		$login = $this->getConfiguration('username');
+		$pwd = $this->getConfiguration('password');
+		$NAS = $this->getName();
+		$cmd = "poweroff";
+		
+		// SSH connection & launch commands
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+			$this->execSSH($cmd);
+		}
+		
+		// close SSH
+		$this->disconnect($NAS);
+	}
+	
+	public function toHtml($_version = 'dashboard') {
+		$replace = $this->preToHtml($_version);
+		if (!is_array($replace)) {
+		  return $replace;
+		}
+		$version = jeedom::versionAlias($_version);
+		if ($this->getDisplay('hideOn' . $version) == 1) {
+		  return '';
+		}
+		
+		$hddsmart = '';
+		$hddtemp = '';
+
+		foreach ($this->getCmd('info') as $cmd) {
+			$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
+			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+			$replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
+			if ($cmd->getIsHistorized() == 1) {
+				$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+			}
+			if ($cmd->getIsVisible() == 0) {
+				$replace['#' . $cmd->getLogicalId() . '_display#'] = 'none';
+			}
+			if(strpos($cmd->getLogicalId(), 'smart') !== false) {
+				$hddsmart = $hddsmart.' '.$cmd->execCmd();
+			}
+			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
+				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
+					$hddtemp = $hddtemp.' '.str_replace(' ', '', $cmd->execCmd());
+				}
+			}
+		}
+		
+		foreach ($this->getCmd('action') as $cmd) {
+			$replace['#cmd_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+		}
+		
+		// traitement du smart
+		$hddsmart = str_replace(' ', '/', trim($hddsmart));
+		$replace['#hddsmart#'] = $hddsmart;
+		
+		// traitement de la temp
+		$hddtemp = str_replace(' ', '/', trim($hddtemp));
+		$replace['#hddtemp#'] = $hddtemp;
+		
+		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
+	  }
 	
 		/*     * *********************Methode d'instance************************* */
 
@@ -440,11 +626,64 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setSubType('other');
 			$QNAPCmd->save();
 		}
-
-		if ($this->getIsEnable()) {
-			$this->getQNAPInfo();
+		
+		$QNAPCmd = $this->getCmd(null, 'reboot');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'reboot');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Redémarrer', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('reboot');
+			$QNAPCmd->setType('action');
+			$QNAPCmd->setSubType('other');
+			$QNAPCmd->save();
+		}
+		
+		$QNAPCmd = $this->getCmd(null, 'poweroff');
+		if (!is_object($QNAPCmd)) {
+			log::add('QNAP', 'debug', 'poweroff');
+			$QNAPCmd = new qnapCmd();
+			$QNAPCmd->setName(__('Arrêter', __FILE__));
+			$QNAPCmd->setEqLogic_id($this->getId());
+			$QNAPCmd->setLogicalId('poweroff');
+			$QNAPCmd->setType('action');
+			$QNAPCmd->setSubType('other');
+			$QNAPCmd->save();
 		}
 	}
+	
+	public function postUpdate() {
+		for($i=1; $i<=$this->nbHDD; $i++) {
+			$QNAPCmd = $this->getCmd(null, 'hdd'.$i.'temp');
+			if (!is_object($QNAPCmd)) {
+				log::add('QNAP', 'debug', 'hdd'.$i.'temp');
+				$QNAPCmd = new qnapCmd();
+				$QNAPCmd->setName(__('HDD'.$i.' Température', __FILE__));
+				$QNAPCmd->setEqLogic_id($this->getId());
+				$QNAPCmd->setLogicalId('hdd'.$i.'temp');
+				$QNAPCmd->setType('info');
+				$QNAPCmd->setSubType('string');
+				$QNAPCmd->save();
+			}
+			
+			$QNAPCmd = $this->getCmd(null, 'hdd'.$i.'smart');
+			if (!is_object($QNAPCmd)) {
+				log::add('QNAP', 'debug', 'hdd'.$i.'smart');
+				$QNAPCmd = new qnapCmd();
+				$QNAPCmd->setName(__('HDD'.$i.' SMART', __FILE__));
+				$QNAPCmd->setEqLogic_id($this->getId());
+				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
+				$QNAPCmd->setType('info');
+				$QNAPCmd->setSubType('string');
+				$QNAPCmd->save();
+			}
+		}
+		
+		$cmd = $this->getCmd(null, 'refresh');
+		if (is_object($cmd)) { 
+			 $cmd->execCmd();
+		}
+    }
 	
 }
 
@@ -460,11 +699,20 @@ class qnapCmd extends cmd {
 
     public function execute($_options = null) {
 		$eqLogic = $this->getEqLogic();
-		if ($this->getLogicalId() == 'refresh') {
-			$eqLogic->getQNAPInfo();
-		} else if ($this->type == 'action') {
-			$eqLogic->cli_execCmd($this->getConfiguration('usercmd'));
-		}
+		switch ($this->getLogicalId()) {
+			case "reboot":
+				$eqLogic->reboot();
+				log::add('QNAP','debug','reboot ' . $this->getHumanName());
+				break;
+			case "poweroff":
+				$eqLogic->halt();
+				log::add('QNAP','debug','poweroff ' . $this->getHumanName());
+				break;
+			case "refresh":
+				$eqLogic->getQNAPInfo();
+				log::add('QNAP','debug','refresh ' . $this->getHumanName());
+				break;
+ 		}
 		return true;
 	}
 
