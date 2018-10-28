@@ -354,7 +354,7 @@ class QNAP extends eqLogic {
 		$cmd = "reboot";
 		
 		// SSH connection & launch commands
-		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
 			$this->execSSH($cmd);
 		}
 		
@@ -371,7 +371,7 @@ class QNAP extends eqLogic {
 		$cmd = "poweroff";
 		
 		// SSH connection & launch commands
-		if ($this->startSSH($IPaddress, $NAS, $login, $pwd)) {
+		if ($this->startSSH($IPaddress, $NAS, $login, $pwd, $port)) {
 			$this->execSSH($cmd);
 		}
 		
