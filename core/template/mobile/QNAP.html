@@ -4,10 +4,68 @@
 			<span title="Espace disque total" class="fa fa-hdd-o" style="min-width:15px"></span>
 			<span>Total #hddtot#</span>
 	</div>
-	<span> Libre #hddfree#</span>
-	<span>Utilisé #hdd#%</span>
-	<span>SMART #hddsmart#</span>
-	<span> Température #hddtemp#</span>
-	<span>Total #ramtot#</span>
-	<span>Utilisée #ramused#</span>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #hddfree_display#;">
+			<span title="Espace disque libre" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> Libre #hddfree#</span>
+	</div>
+	<div data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hdd_display#;">
+			<span title="Pourcentage utilisation" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> Utilisé #hdd#%</span>
+	</div>
+	<div data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddsmart_display#;">
+			<span title="Etat SMART" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> SMART #hddsmart#</span>
+	</div>
+	<div data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
+			<span title="Température ds disques" class="fa fa-hdd-o" style="min-width:15px"></span>
+			<span> Température #hddtemp#</span>
+	</div>
+	
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #ramtot_display#;">
+			<span title="Mémoire RAM total" class="icon techno-memory" style="min-width:15px"></span>
+			<span>Total #ramtot#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #ramused_display#;">
+			<span title="Mémoire RAM utilisée" class="icon techno-memory" style="min-width:15px"></span>
+			<span>Utilisée #ramused#</span>
+	</div>
+	<div data-type="info" data-subtype="numeric" style="margin-left:5px;display: #ram_display#;">
+			<span title="Pourcentage utilisation" class="icon techno-memory" style="min-width:15px"></span>
+			<span> Utilisée #ram#%</span>
+	</div>
+	
+	<div data-type="info" data-subtype="numeric" style="margin-left:5px;display: #cpu_display#;">
+		<span title="Utilisation CPU" class="fa fa-tachometer" style="min-width:15px"></span>
+		<span>Processeur #cpu#%</span>
+	</div>
+	
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #systemp_display#;">
+			<span title="Température système" class="icon jeedom-thermometre" style="min-width:15px"></span>
+			<span>Système #systemp#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #cputemp_display#;">
+			<span title="Température" class="icon jeedom-thermometre" style="min-width:15px"></span>
+			<span>CPU #cputemp#</span>
+	</div>
+	
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #model_display#;">
+			<span title="Modèle QNAP" class="icon techno-pc" style="min-width:15px"></span>
+			<span>#model#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #cpumodel_display#;">
+			<span title="Modèle CPU" class="fa fa-linux" style="min-width:15px"></span>
+			<span>#cpumodel#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #version_display#;">
+			<span title="Version QNAP" class="fa fa-linux" style="min-width:15px"></span>
+			<span>#version#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #os_display#;">
+			<span title="OS" class="fa fa-linux" style="min-width:15px"></span>
+			<span>#os#</span>
+	</div>
+	<div data-type="info" data-subtype="string" style="margin-left:5px;display: #uptime_display#;">
+			<span title="Uptime" class="icon divers-calendar2" style="min-width:15px;"></span>
+			<span>#uptime#</span>
+	</div>
 </div>
