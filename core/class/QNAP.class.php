@@ -350,6 +350,7 @@ class QNAP extends eqLogic {
 		$IPaddress = $this->getConfiguration('ip');
 		$login = $this->getConfiguration('username');
 		$pwd = $this->getConfiguration('password');
+		$port = $this->getConfiguration('portssh');
 		$NAS = $this->getName();
 		$cmd = "reboot";
 		
@@ -367,6 +368,7 @@ class QNAP extends eqLogic {
 		$IPaddress = $this->getConfiguration('ip');
 		$login = $this->getConfiguration('username');
 		$pwd = $this->getConfiguration('password');
+		$port = $this->getConfiguration('portssh');
 		$NAS = $this->getName();
 		$cmd = "poweroff";
 		
