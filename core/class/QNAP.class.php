@@ -130,7 +130,8 @@ class QNAP extends eqLogic {
 		);
 
 		// oids
-		$oidCPU = "1.3.6.1.4.1.24681.1.2.1.0";
+		$oidCPU = "1.3.6.1.4.1.24681.1.2.1";
+		//$oidCPU = "1.3.6.1.4.1.24681.1.2.1.0";
 		$oidCPUinfos = "";
 		$oidRAMtot = "1.3.6.1.4.1.24681.1.2.2.0";
 		$oidRAMfree = "1.3.6.1.4.1.24681.1.2.3.0";
@@ -223,7 +224,7 @@ class QNAP extends eqLogic {
 				$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
 				$this->infos['ramused'] = round($this->infos['ramtot']-$ramfree);
-				$this->infos['ram'] = round(100-($this->infos['ramused']*100/$this->infos['ramtot']));
+				$this->infos['ram'] = round(($this->infos['ramused']*100/$this->infos['ramtot']));
 				$this->infos['ramtot'] = $this->infos['ramtot'].' MB';
 				$this->infos['ramused'] = $this->infos['ramused'].' MB';
 			
