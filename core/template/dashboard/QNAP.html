@@ -47,8 +47,17 @@
 	</div>
 	<div class="tooltips" data-cmd_id="#hdd_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hdd_display#;">
 			<span title="Pourcentage utilisation" class="fa fa-hdd-o" style="min-width:15px"></span>
-			<span> Utilisé #hdd#%</span>
+			<span> Utilisé <span id="hdd">#hdd#%</span></span>
 	</div>
+	<script>
+		if ('#hdd#' < 60) {
+			$('#hdd').css('color','green');
+		}else if ('#hdd#' >= 60 && '#hdd#' <= 80) {
+			$('#hdd').css('color','orange');
+		}else if ('#hdd#' > 80) {
+			$('#hdd').css('color','red');
+		}
+	</script>
 	<div class="tooltips" data-cmd_id="#hddsmart_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddsmart_display#;">
 			<span title="Etat SMART" class="fa fa-hdd-o" style="min-width:15px"></span>
 			<span> SMART #hddsmart#</span>
@@ -68,9 +77,17 @@
 	</div>
 	<div class="tooltips" data-cmd_id="#ram_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #ram_display#;">
 			<span title="Pourcentage utilisation" class="icon techno-memory" style="min-width:15px"></span>
-			<span> Utilisée #ram#%</span>
+			<span> Utilisée <span id="ram">#ram#%</span></span>
 	</div>
-	
+	<script>
+		if ('#ram#' < 60) {
+			$('#ram').css('color','green');
+		}else if ('#ram#' >= 60 && '#ram#' <= 80) {
+			$('#ram').css('color','orange');
+		}else if ('#ram#' > 80) {
+			$('#ram').css('color','red');
+		}
+	</script>
 	<div class="tooltips" data-cmd_id="#cpu_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #cpu_display#;">
 		<span title="Utilisation CPU" class="fa fa-tachometer" style="min-width:15px"></span>
 		<span>Processeur <span id="cpu">#cpu#%</span></span>
@@ -78,12 +95,10 @@
 	<script>
 		if ('#cpu#' < 60) {
 			$('#cpu').css('color','green');
-		}else if ('#cpu#' >= '60' && '#cpu#' <= '80') {
-			$('cpu').append('<span style="color: #FF8000;">#cpu#%</span>');
-		}else if ('#cpu#' > '80') {
-			$('cpu').append('<span style="color: #FF0000;">#cpu#%</span>');
-		} else {
-			$('#cpu').css('color','black');
+		}else if ('#cpu#' >= 60 && '#cpu#' <= 80) {
+			$('#cpu').css('color','orange');
+		}else if ('#cpu#' > 80) {
+			$('#cpu').css('color','red');
 		}
 	</script>
 	<div class="tooltips" data-cmd_id="#systemp_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #systemp_display#;">
