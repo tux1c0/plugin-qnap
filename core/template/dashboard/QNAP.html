@@ -77,13 +77,13 @@
 	</div>
 	<script>
 		if ('#cpu#' < 60) {
-			$('cpu').css('color','green');
+			$('#cpu').css('color','green');
 		}else if ('#cpu#' >= '60' && '#cpu#' <= '80') {
 			$('cpu').append('<span style="color: #FF8000;">#cpu#%</span>');
 		}else if ('#cpu#' > '80') {
 			$('cpu').append('<span style="color: #FF0000;">#cpu#%</span>');
 		} else {
-			$('cpu').css('color','black');
+			$('#cpu').css('color','black');
 		}
 	</script>
 	<div class="tooltips" data-cmd_id="#systemp_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #systemp_display#;">
