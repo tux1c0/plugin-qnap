@@ -73,9 +73,17 @@
 	
 	<div class="tooltips" data-cmd_id="#cpu_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #cpu_display#;">
 		<span title="Utilisation CPU" class="fa fa-tachometer" style="min-width:15px"></span>
-		<span>Processeur #cpu#%</span>
+		<span id="cpu">Processeur </span>
 	</div>
-	
+	<script>
+		if ('#cpu#' < 60) {
+			$('cpu').append('<span style="color: #00FF00;">#cpu#%</span>');
+		}else if ('#cpu#' >= '60' && '#cpu#' <= '80') {
+			$('cpu').append('<span style="color: #FF8000;">#cpu#%</span>');
+		}else if ('#cpu#' > '80') {
+			$('cpu').append('<span style="color: #FF0000;">#cpu#%</span>');
+		}
+	</script>
 	<div class="tooltips" data-cmd_id="#systemp_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #systemp_display#;">
 			<span title="Température système" class="icon jeedom-thermometre" style="min-width:15px"></span>
 			<span>Système #systemp#</span>
@@ -106,3 +114,4 @@
 			<span>#uptime#</span>
 	</div>
 </div>
+
