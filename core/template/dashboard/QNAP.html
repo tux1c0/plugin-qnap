@@ -35,6 +35,15 @@
 		});
 		</script>
 		</span>
+		<span id="#status_id#" style="float: right;width:25px"></span>
+		<script>
+			if ('#status#' == 'Up') {
+				$('##status_id#').append('<i title="Connexion Up" class="fa fa-check tooltips" style="font-size : 1.1em;color: #00FF00;" ></i>');
+			}
+			if ('#status#' == 'Down') {
+				$('##status_id#').append('<i title="Connexion Down" class="fa fa-times tooltips" style="font-size : 1.1em;color: #FF0000;"></i>');
+			}
+		</script>
 	</center>
 
 	<div class="tooltips" data-cmd_id="#hddtot_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #hddtot_display#;">
@@ -143,4 +152,3 @@
 			<span>#uptime#</span>
 	</div>
 </div>
-
