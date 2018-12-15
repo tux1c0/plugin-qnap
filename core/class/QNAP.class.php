@@ -21,6 +21,7 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class QNAP extends eqLogic {
     /*     * *************************Attributs****************************** */
+	public static $_widgetPossibility = array('custom' => true);
 	
     /*     * ***********************Methode static*************************** */
 	public static function dependancy_info() {
