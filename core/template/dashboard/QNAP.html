@@ -56,28 +56,28 @@
 	</div>
 	<div class="tooltips" data-cmd_id="#hdd_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hdd_display#;">
 			<span title="Pourcentage utilisation" class="far fa-hdd" style="min-width:15px"></span>
-			<span> Utilisé <span id="#span_hdd_id#">#hdd#%</span></span>
+			<span> Utilisé <span id="span_#hdd_id#">#hdd#%</span></span>
 	</div>
 	<script>
 		if ('#hdd#' != '') {
 			if ('#hdd#' < 60) {
-				$('##span_hdd_id#').css('color','green');
+				$('#span_#hdd_id#').css('color','green');
 			}else if ('#hdd#' >= 60 && '#hdd#' <= 80) {
-				$('##span_hdd_id#').css('color','orange');
+				$('#span_#hdd_id#').css('color','orange');
 			}else if ('#hdd#' > 80) {
-				$('##span_hdd_id#').css('color','red');
+				$('#span_#hdd_id#').css('color','red');
 			}
 		}
 	</script>
 	<div class="tooltips" data-cmd_id="#hddsmart_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddsmart_display#;">
 			<span title="Etat SMART" class="far fa-hdd" style="min-width:15px"></span>
-			<span id="#span_hddsmart_id#"> SMART </span>
+			<span id="span_#hddsmart_id#"> SMART </span>
 	</div>
 	<script>
 		var myRegEx = new RegExp("BAD","gm");
 		var myString = '#hddsmart#';
 		var newString = myString.replace(myRegEx ,'<span style="color: #FF0000;">BAD</span>');
-		$('##span_hddsmart_id#').append(newString);
+		$('#span_#hddsmart_id#').append(newString);
 	</script>
 	<div class="tooltips" data-cmd_id="#hddtemp_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
 			<span title="Température ds disques" class="far fa-hdd" style="min-width:15px"></span>
@@ -94,16 +94,16 @@
 	</div>
 	<div class="tooltips" data-cmd_id="#ram_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #ram_display#;">
 			<span title="Pourcentage utilisation" class="icon techno-memory" style="min-width:15px"></span>
-			<span> Utilisée <span id="#span_ram_id#">#ram#%</span></span>
+			<span> Utilisée <span id="span_#ram_id#">#ram#%</span></span>
 	</div>
 	<script>
 		if ('#ram#' != '') {
 			if ('#ram#' < 60) {
-				$('##span_ram_id#').css('color','green');
+				$('#span_#ram_id#').css('color','green');
 			}else if ('#ram#' >= 60 && '#ram#' <= 80) {
-				$('##span_ram_id#').css('color','orange');
+				$('#span_#ram_id#').css('color','orange');
 			}else if ('#ram#' > 80) {
-				$('##span_ram_id#').css('color','red');
+				$('#span_#ram_id#').css('color','red');
 			}
 		}
 	</script>
