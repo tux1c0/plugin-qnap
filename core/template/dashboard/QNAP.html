@@ -109,16 +109,16 @@
 	</script>
 	<div class="tooltips" data-cmd_id="#cpu_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #cpu_display#;">
 		<span title="Utilisation CPU" class="fas fa-tachometer-alt" style="min-width:15px"></span>
-		<span>Processeur <span id="cpu">#cpu#%</span></span>
+		<span>Processeur <span id="span_#cpu_id#">#cpu#%</span></span>
 	</div>
 	<script>
 		if ('#cpu#' != '') {
 			if ('#cpu#' < 60) {
-				$('#cpu').css('color','green');
+				$('#span_#cpu_id#').css('color','green');
 			}else if ('#cpu#' >= 60 && '#cpu#' <= 80) {
-				$('#cpu').css('color','orange');
+				$('#span_#cpu_id#').css('color','orange');
 			}else if ('#cpu#' > 80) {
-				$('#cpu').css('color','red');
+				$('#span_#cpu_id#').css('color','red');
 			}
 		}
 	</script>
