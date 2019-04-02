@@ -71,13 +71,13 @@
 	</script>
 	<div class="tooltips" data-cmd_id="#hddsmart_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddsmart_display#;">
 			<span title="Etat SMART" class="far fa-hdd" style="min-width:15px"></span>
-			<span id="#span_smart_id#"> SMART </span>
+			<span id="#span_hddsmart_id#"> SMART </span>
 	</div>
 	<script>
 		var myRegEx = new RegExp("BAD","gm");
 		var myString = '#hddsmart#';
 		var newString = myString.replace(myRegEx ,'<span style="color: #FF0000;">BAD</span>');
-		$('##span_smart_id#').append(newString);
+		$('##span_hddsmart_id#').append(newString);
 	</script>
 	<div class="tooltips" data-cmd_id="#hddtemp_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
 			<span title="Température ds disques" class="far fa-hdd" style="min-width:15px"></span>
