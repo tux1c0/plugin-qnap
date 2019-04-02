@@ -399,6 +399,7 @@ class QNAP extends eqLogic {
 		foreach ($this->getCmd('info') as $cmd) {
 			$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
 			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+			$replace['#span_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
 			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
 			$replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
 			if ($cmd->getIsHistorized() == 1) {
