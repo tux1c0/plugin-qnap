@@ -581,7 +581,7 @@ class QNAP extends eqLogic {
 		if (!is_object($QNAPCmd)) {
 			log::add('QNAP', 'debug', 'nasversion');
 			$QNAPCmd = new qnapCmd();
-			$QNAPCmd->setName(__('Version', __FILE__));
+			$QNAPCmd->setName(__('Version NAS', __FILE__));
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('nasversion');
 			$QNAPCmd->setType('info');
