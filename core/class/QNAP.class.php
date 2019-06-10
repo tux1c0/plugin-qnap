@@ -383,7 +383,7 @@ class QNAP extends eqLogic {
 		$this->disconnect($NAS);
 	}
 	
-	public function toHtml($_version = 'dashboard') {
+	/*public function toHtml($_version = 'dashboard') {
 		$replace = $this->preToHtml($_version);
 		if (!is_array($replace)) {
 		  return $replace;
@@ -437,6 +437,7 @@ class QNAP extends eqLogic {
 		
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
 	  }
+	  */
 	
 		/*     * *********************Methode d'instance************************* */
 
@@ -537,6 +538,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hddtot');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','hddtot');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
 		}
