@@ -9,7 +9,7 @@
 		</script>
 		</span>
 		<span title="Eteindre l'équipement" class="poweroff tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_poweroff_id#" style="float: right">
-			<a class="action" style="cursor: pointer;"><i class="fa fa-power-off" style="font-size : 1.0em;padding-right:10px"></i></a>
+			<a class="action" style="cursor: pointer;"><i class="fa fa-power-off" style="padding-right:10px"></i></a>
 
 		<script>
 		$('.poweroff[data-cmd_id=#cmd_poweroff_id#] .action').on('click', function() {
@@ -22,7 +22,7 @@
 		</script>
 		</span>
 		<span title="Redémarrer l'équipement" class="reboot tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_reboot_id#" style="float: right">
-			<a class="action" style="cursor: pointer;"><i class="fas fa-redo" style="font-size : 1.0em;padding-right:10px"></i></a>
+			<a class="action" style="cursor: pointer;"><i class="fas fa-redo" style="padding-right:10px"></i></a>
 		<script>
 		$('.reboot[data-cmd_id=#cmd_reboot_id#] .action').on('click', function() {
 			bootbox.confirm('Etes-vous sûr de vouloir redémarrer l\'équipement #name# ?', function (result) {
@@ -33,13 +33,13 @@
 		});
 		</script>
 		</span>
-		<span id="#status_id#" style="float: right;width:25px"></span>
+		<span id="#status_id#" style="float: right;"></span>
 		<script>
 			if ('#status#' == 'Up') {
-				$('##status_id#').append('<i title="Connexion Up" class="fa fa-check tooltips" style="font-size : 1.1em;color: #00FF00;" ></i>');
+				$('##status_id#').append('<i title="Connexion Up" class="fa fa-check tooltips" style="color: #00FF00;" ></i>');
 			}
 			if ('#status#' == 'Down') {
-				$('##status_id#').append('<i title="Connexion Down" class="fa fa-times tooltips" style="font-size : 1.1em;color: #FF0000;"></i>');
+				$('##status_id#').append('<i title="Connexion Down" class="fa fa-times tooltips" style="color: #FF0000;"></i>');
 			}
 		</script>
 	</center>
