@@ -88,7 +88,7 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 				</div>
 			</div>
 					<div class="form-group">
-						<label class="col-sm-2 control-label"></label>
+						<label class="col-sm-3 control-label"></label>
 						<div class="col-sm-9">
 							<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked/>{{Activer}}</label>
 							<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked/>{{Visible}}</label>
@@ -98,8 +98,8 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 						<legend>{{Configuration NAS}}</legend>
 						<div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{IP}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{IP}}</label>
+								<div class="col-sm-3">
 									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="ip" />
 								</div>
 							</div>
@@ -109,20 +109,20 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 						<legend>{{Configuration SSH}}</legend>
 						<div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{Nom d'utilisateur}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{Nom d'utilisateur}}</label>
+								<div class="col-sm-3">
 									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="username" />
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{Mot de passe}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{Mot de passe}}</label>
+								<div class="col-sm-3">
 									<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="password" />
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{Port SSH}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{Port SSH}}</label>
+								<div class="col-sm-3">
 									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="portssh" />
 								</div>
 							</div>
@@ -132,20 +132,20 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
 						<legend>{{Configuration SNMP}}</legend>
 						<div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label"></label>
+								<label class="col-sm-3 control-label"></label>
 								<div class="col-sm-9">
 									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="fullsnmp" />Utiliser uniquement le SNMP (désactive le SSH)</label>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{Communauté RO SNMP}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{Communauté RO SNMP}}</label>
+								<div class="col-sm-3">
 									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="snmp" />
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">{{Version}}</label>
-								<div class="col-sm-2">
+								<label class="col-sm-3 control-label">{{Version}}</label>
+								<div class="col-sm-3">
 									<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="snmpversion" >
 										<option value="v1">v1</option>
 										<option value="v2">v2</option>
