@@ -51,4 +51,4 @@ Sauvegarder la configuration. Le module va commencer à poller toutes les 15 min
 
 Changelog
 ===
--	25/08/2019 : Ajout du changelog, changement des icônes fa5, préparation v4
+-	25/08/2019 : Ajout du changelog, changement des icônes fa5, préparation v4, bugfixes
