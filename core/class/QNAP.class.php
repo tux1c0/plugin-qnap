@@ -124,7 +124,7 @@ class QNAP extends eqLogic {
 			'os' 		=> '',
 			'status'	=> '',
 			'model'		=> '',
-			'version'	=> '',
+			'nasversion'	=> '',
 			'systemp'	=> '',
 			'cputemp'	=> '',
 			'uptime'	=> ''
@@ -175,7 +175,7 @@ class QNAP extends eqLogic {
 			$this->infos['cpu'] = round($this->execSNMP($IPaddress, $community, $oidCPU, $snmpVersion));
 			$this->infos['cpumodel'] = "NA in SNMP only";
 			$this->infos['model'] = $this->execSNMP($IPaddress, $community, $oidModel, $snmpVersion);
-			$this->infos['version'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
+			$this->infos['nasversion'] = $this->execSNMP($IPaddress, $community, $oidVersion, $snmpVersion);
 			$this->infos['systemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidSysTemp, $snmpVersion))[0];
 			$this->infos['cputemp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidCPUTemp, $snmpVersion))[0];
 			$this->infos['uptime'] = explode(")", trim($this->execSNMP($IPaddress, $community, $oidUptime, $snmpVersion)))[1];
@@ -213,14 +213,14 @@ class QNAP extends eqLogic {
 				
 				$this->infos['cpumodel'] = $this->execSSH($cmdCPUinfos);
 				$this->infos['model'] = trim($this->execSSH($cmdModel));
-				$this->infos['version'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
+				$this->infos['nasversion'] = trim($this->execSSH($cmdVersion)).' Build '.trim($this->execSSH($cmdBuild));
 				$this->infos['systemp'] = explode("/", trim($this->execSSH($cmdSysTemp)))[0];
 				$this->infos['cputemp'] = explode("/", trim($this->execSSH($cmdCPUTemp)))[0];
 				
 				$up = trim($this->execSSH($cmdUptime));
 				$up_array = explode(",", $up);
 				$up_array2 = explode("up", $up_array[0]);
-				$this->infos['uptime'] = trim($up_array2[1]);
+				$this->infos['uptime'] = trim(str_replace(':', 'h ', $up_array2[1]));
 				
 				$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
@@ -394,7 +394,9 @@ class QNAP extends eqLogic {
 		}
 		
 		$hddsmart = '';
+		$hddsmart_id = '';
 		$hddtemp = '';
+		$hddtemp_id = '';
 
 		foreach ($this->getCmd('info') as $cmd) {
 			$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
@@ -409,10 +411,12 @@ class QNAP extends eqLogic {
 			}
 			if(strpos($cmd->getLogicalId(), 'smart') !== false) {
 				$hddsmart = $hddsmart.' '.$cmd->execCmd();
+				$hddsmart_id = $cmd->getId();
 			}
 			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
 				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
 					$hddtemp = $hddtemp.' '.str_replace(' ', '', $cmd->execCmd());
+					$hddtemp_id = $cmd->getId();
 				}
 			}
 		}
@@ -424,13 +428,16 @@ class QNAP extends eqLogic {
 		// traitement du smart
 		$hddsmart = str_replace(' ', '/', trim($hddsmart));
 		$replace['#hddsmart#'] = $hddsmart;
+		$replace['#hddsmart_id#'] = $hddsmart_id;
 		
 		// traitement de la temp
 		$hddtemp = str_replace(' ', '/', trim($hddtemp));
 		$replace['#hddtemp#'] = $hddtemp;
+		$replace['#hddtemp_id#'] = $hddtemp_id;
 		
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
 	  }
+	  
 	
 		/*     * *********************Methode d'instance************************* */
 
@@ -531,6 +538,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hddtot');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','hddtot');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
 		}
@@ -571,13 +579,13 @@ class QNAP extends eqLogic {
 			$QNAPCmd->save();
 		}
 		
-		$QNAPCmd = $this->getCmd(null, 'version');
+		$QNAPCmd = $this->getCmd(null, 'nasversion');
 		if (!is_object($QNAPCmd)) {
-			log::add('QNAP', 'debug', 'version');
+			log::add('QNAP', 'debug', 'nasversion');
 			$QNAPCmd = new qnapCmd();
-			$QNAPCmd->setName(__('Version', __FILE__));
+			$QNAPCmd->setName(__('Version NAS', __FILE__));
 			$QNAPCmd->setEqLogic_id($this->getId());
-			$QNAPCmd->setLogicalId('version');
+			$QNAPCmd->setLogicalId('nasversion');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
