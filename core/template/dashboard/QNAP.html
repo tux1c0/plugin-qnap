@@ -1,4 +1,4 @@
-<div class="eqLogic-widget eqLogic allowResize ui-draggable ui-draggable-handle allowLayout eqLogic_layout_default allowReorderCmd" style="width: 240px; height: 360px;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="" data-category="" data-tags="" data-eqtype="qnap">
+<div class="eqLogic-widget eqLogic allowResize ui-draggable ui-draggable-handle allowLayout eqLogic_layout_default allowReorderCmd" style="width: 240px; height: 350px;border:#border#;border-radius:#border-radius#;background-color: #background-color#;color: #color#;#style#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" data-translate-category="" data-category="" data-tags="" data-eqtype="qnap">
 	<center class="widget-name"><a href="#eqLink#" style="font-size : 1.1em; #hideEqLogicName#">#name_display#</a>
 		<span title="Rafaîchir" class="refresh tooltips" data-type="action" data-subtype="other" data-cmd_id="#cmd_refresh_id#" style="float: right">
 			<a class="action" style="cursor: pointer;"><i class="fas fa-sync" style="padding-right:10px"></i></a>
@@ -50,11 +50,11 @@
 	</div>
 	<div class="tooltips" data-cmd_id="#hddfree_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #hddfree_display#;">
 			<span title="Espace disque libre" class="far fa-hdd" style="min-width:15px"></span>
-			<span> Libre #hddfree#</span>
+			<span> Libre <strong>#hddfree#</strong></span>
 	</div>
 	<div class="tooltips" data-cmd_id="#hdd_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hdd_display#;">
 			<span title="Pourcentage utilisation" class="far fa-hdd" style="min-width:15px"></span>
-			<span> Utilisé <span id="span_#hdd_id#">#hdd#%</span></span>
+			<span> Utilisé <span id="span_#hdd_id#"><strong>#hdd#%</strong></span></span>
 	</div>
 	<script>
 		if ('#hdd#' != '') {
@@ -79,20 +79,20 @@
 	</script>
 	<div class="tooltips" data-cmd_id="#hddtemp_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
 			<span title="Température ds disques" class="far fa-hdd" style="min-width:15px"></span>
-			<span> Température #hddtemp#</span>
+			<span> Température <strong>#hddtemp#</strong></span>
 	</div>
 	
 	<div class="tooltips" data-cmd_id="#ramtot_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #ramtot_display#;">
 			<span title="Mémoire RAM total" class="icon techno-memory" style="min-width:15px"></span>
-			<span>Total #ramtot#</span>
+			<span>Total <strong>#ramtot#</strong></span>
 	</div>
 	<div class="tooltips" data-cmd_id="#ramused_id#" data-type="info" data-subtype="string" style="margin-left:5px;display: #ramused_display#;">
 			<span title="Mémoire RAM utilisée" class="icon techno-memory" style="min-width:15px"></span>
-			<span>Utilisée #ramused#</span>
+			<span>Utilisée <strong>#ramused#</strong></span>
 	</div>
 	<div class="tooltips" data-cmd_id="#ram_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #ram_display#;">
 			<span title="Pourcentage utilisation" class="icon techno-memory" style="min-width:15px"></span>
-			<span> Utilisée <span id="span_#ram_id#">#ram#%</span></span>
+			<span> Utilisée <span id="span_#ram_id#"><strong>#ram#%</strong></span></span>
 	</div>
 	<script>
 		if ('#ram#' != '') {
@@ -107,7 +107,7 @@
 	</script>
 	<div class="tooltips" data-cmd_id="#cpu_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #cpu_display#;">
 		<span title="Utilisation CPU" class="fas fa-tachometer-alt" style="min-width:15px"></span>
-		<span>Processeur <span id="span_#cpu_id#">#cpu#%</span></span>
+		<span>Processeur <span id="span_#cpu_id#"><strong>#cpu#%</strong></span></span>
 	</div>
 	<script>
 		if ('#cpu#' != '') {
