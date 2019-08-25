@@ -7,7 +7,7 @@ Installationn
 ===
 
 Le plugin, une fois installé, doit être activé. Il installera les dépéndances nécessaires au bon fonctionnement.
-Sur Debian 8, des problèmes de dépendances sont parfois bloquant pour le bon fonctionnement du plugin (erreur 500).
+Sur Debian 8, des problèmes de dépendances sont parfois bloquants pour le bon fonctionnement du plugin (erreur 500). Il n'y a pas de solution à date. 
 
 
 Configuration
@@ -48,3 +48,7 @@ Tous les éléments suivants sont obligatoires pour avoir le plugin fonctionnel
 -	Utiliser uniquement le SNMP (désactive le SSH) : cocher la case désactive le protocole SSH. Certaines fonctions ne seront plus disponibles (redémarrer, arrêt, build QNAP, version d'OS, CPU)
 
 Sauvegarder la configuration. Le module va commencer à poller toutes les 15 minutes le NAS.
+
+Changelog
+===
+-	25/08/2019 : Ajout du changelog, changement des icônes fa5, préparation v4

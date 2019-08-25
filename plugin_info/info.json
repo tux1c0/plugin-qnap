@@ -7,5 +7,6 @@
 	"require" : "3.3.24",
 	"category" : "monitoring",
 	"hasDependency" : true,
+	"changelog" : "https://tux1c0.github.io/plugin-qnap/#language#/",
 	"documentation" : "https://tux1c0.github.io/plugin-qnap/#language#/"
 }
