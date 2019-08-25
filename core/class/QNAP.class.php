@@ -220,7 +220,7 @@ class QNAP extends eqLogic {
 				$up = trim($this->execSSH($cmdUptime));
 				$up_array = explode(",", $up);
 				$up_array2 = explode("up", $up_array[0]);
-				$this->infos['uptime'] = trim(str_replace(':', 'min ', $up_array2[1]));
+				$this->infos['uptime'] = trim(str_replace(':', 'h ', $up_array2[1]));
 				
 				$ramfree = $this->execSNMP($IPaddress, $community, $oidRAMfree, $snmpVersion);
 				$this->infos['ramtot'] = round($this->execSNMP($IPaddress, $community, $oidRAMtot, $snmpVersion));
