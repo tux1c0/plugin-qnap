@@ -73,11 +73,9 @@
 	</div>
 	<script>
 		var myRegEx = new RegExp("BAD","gm");
-		var myString = '#hddsmart#';
+		var myString = '<strong>#hddsmart#</strong>';
 		var newString = myString.replace(myRegEx ,'<span style="color: #FF0000;">BAD</span>');
-		$('#span_#hddsmart_id#').append('<strong>');
 		$('#span_#hddsmart_id#').append(newString);
-		$('#span_#hddsmart_id#').append('</strong>');
 	</script>
 	<div class="tooltips" data-cmd_id="#hddtemp_id#" data-type="info" data-subtype="numeric" style="margin-left:5px;display: #hddtemp_display#;">
 			<span title="Température ds disques" class="far fa-hdd" style="min-width:15px"></span>
