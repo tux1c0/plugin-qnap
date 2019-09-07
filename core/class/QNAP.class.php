@@ -383,7 +383,7 @@ class QNAP extends eqLogic {
 		$this->disconnect($NAS);
 	}
 	
-	public function toHtml($_version = 'dashboard') {
+	/*public function toHtml($_version = 'dashboard') {
 		$replace = $this->preToHtml($_version);
 		if (!is_array($replace)) {
 		  return $replace;
@@ -436,7 +436,7 @@ class QNAP extends eqLogic {
 		$replace['#hddtemp_id#'] = $hddtemp_id;
 		
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
-	  }
+	  }*/
 	  
 	
 		/*     * *********************Methode d'instance************************* */
