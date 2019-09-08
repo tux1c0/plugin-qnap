@@ -437,7 +437,16 @@ class QNAP extends eqLogic {
 		
 		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
 	  }*/
-	  
+	
+	public static function templateWidget(){
+		$return = array('info' => array('string' => array()));
+		$return['info']['string']['state'] = array(
+			'template' => 'default','test' => array(
+				array('operation' => '#value#','state' => '<i class="icon maison-vacuum6"></i>')
+			)
+		);
+		return $return;
+	}
 	
 		/*     * *********************Methode d'instance************************* */
 
@@ -687,6 +696,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('string');
+				$QNAPCmd->setTemplate('dashboard','QNAP::state');
 				$QNAPCmd->save();
 			}
 		}
