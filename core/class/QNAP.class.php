@@ -383,70 +383,7 @@ class QNAP extends eqLogic {
 		$this->disconnect($NAS);
 	}
 	
-	/*public function toHtml($_version = 'dashboard') {
-		$replace = $this->preToHtml($_version);
-		if (!is_array($replace)) {
-		  return $replace;
-		}
-		$version = jeedom::versionAlias($_version);
-		if ($this->getDisplay('hideOn' . $version) == 1) {
-		  return '';
-		}
-		
-		$hddsmart = '';
-		$hddsmart_id = '';
-		$hddtemp = '';
-		$hddtemp_id = '';
 
-		foreach ($this->getCmd('info') as $cmd) {
-			$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
-			$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-			$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
-			$replace['#' . $cmd->getLogicalId() . '_collect#'] = $cmd->getCollectDate();
-			if ($cmd->getIsHistorized() == 1) {
-				$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
-			}
-			if ($cmd->getIsVisible() == 0) {
-				$replace['#' . $cmd->getLogicalId() . '_display#'] = 'none';
-			}
-			if(strpos($cmd->getLogicalId(), 'smart') !== false) {
-				$hddsmart = $hddsmart.' '.$cmd->execCmd();
-				$hddsmart_id = $cmd->getId();
-			}
-			if(strpos($cmd->getLogicalId(), 'temp') !== false) {
-				if(strpos($cmd->getLogicalId(), 'hdd') !== false) {
-					$hddtemp = $hddtemp.' '.str_replace(' ', '', $cmd->execCmd());
-					$hddtemp_id = $cmd->getId();
-				}
-			}
-		}
-		
-		foreach ($this->getCmd('action') as $cmd) {
-			$replace['#cmd_' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
-		}
-		
-		// traitement du smart
-		$hddsmart = str_replace(' ', '/', trim($hddsmart));
-		$replace['#hddsmart#'] = $hddsmart;
-		$replace['#hddsmart_id#'] = $hddsmart_id;
-		
-		// traitement de la temp
-		$hddtemp = str_replace(' ', '/', trim($hddtemp));
-		$replace['#hddtemp#'] = $hddtemp;
-		$replace['#hddtemp_id#'] = $hddtemp_id;
-		
-		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'QNAP', 'QNAP')));
-	  }*/
-	
-	public static function templateWidget(){
-		$return = array('info' => array('string' => array()));
-		$return['info']['string']['state'] = array(
-			'template' => 'default','test' => array(
-				array('operation' => '#value#','state' => '<i class="icon maison-vacuum6"></i>')
-			)
-		);
-		return $return;
-	}
 	
 		/*     * *********************Methode d'instance************************* */
 
