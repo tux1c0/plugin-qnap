@@ -19,7 +19,7 @@
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 function QNAP_install() {
-	$cron = cron::byClassAndFunction('QNAP', 'update');
+	/*$cron = cron::byClassAndFunction('QNAP', 'update');
 	if (!is_object($cron)) {
 		$cron = new cron();
 		$cron->setClass('QNAP');
@@ -29,11 +29,11 @@ function QNAP_install() {
 		$cron->setSchedule('* * * * *');
 		$cron->setTimeout(30);
 		$cron->save();
-	}
+	}*/
 }
 
 function QNAP_update() {
-	$cron = cron::byClassAndFunction('QNAP', 'update');
+	/*$cron = cron::byClassAndFunction('QNAP', 'update');
 	if (!is_object($cron)) {
 		$cron = new cron();
 	}
@@ -47,7 +47,7 @@ function QNAP_update() {
 	$cron->stop();
 	foreach (qnap::byType('QNAP') as $QNAP) {
 		$QNAP->save();
-	}
+	}*/
 }
 
 function QNAP_remove() {
