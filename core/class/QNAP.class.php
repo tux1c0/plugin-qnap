@@ -387,7 +387,7 @@ class QNAP extends eqLogic {
 	
 		/*     * *********************Methode d'instance************************* */
 	public function preSave() {
-		$this->setDisplay("height","auto");
+		$this->setDisplay('height','800');
     }
 	
 	public function postSave() {
@@ -401,7 +401,6 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('status');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			//$QNAPCmd->setOrder(1);
 			$QNAPCmd->save();
 		}
 		
@@ -475,7 +474,6 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hdd');
 			$QNAPCmd->setType('info');
-			$QNAPCmd->setTemplate('dashboard','hddtot');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite( '%' );
 			$QNAPCmd->save();
@@ -502,7 +500,6 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hddfree');
 			$QNAPCmd->setType('info');
-			$QNAPCmd->setTemplate('dashboard','hddtot');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->save();
 		}
@@ -626,8 +623,8 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('hdd'.$i.'temp');
 				$QNAPCmd->setType('info');
-				$QNAPCmd->setTemplate('dashboard','hddtot');
-				$QNAPCmd->setSubType('string');
+				$QNAPCmd->setSubType('numeric');
+				$QNAPCmd->setUnite('°C');
 				$QNAPCmd->save();
 			}
 			
@@ -639,7 +636,6 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
-				$QNAPCmd->setTemplate('dashboard','hdd1smart');
 				$QNAPCmd->setSubType('string');
 				$QNAPCmd->save();
 			}
