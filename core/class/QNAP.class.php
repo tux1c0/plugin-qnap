@@ -190,10 +190,10 @@ class QNAP extends eqLogic {
 			
 			$this->nbHDDnas = $this->execSNMP($IPaddress, $community, $oidHDDnb, $snmpVersion);
 			for($i=1; $i<=$this->nbHDDnas; $i++) {
-				$this->infos['hdd'.$i.'temp'] = '';
+				$this->infos['hdd'.$i.'temp'] = 0;
 				$this->infos['hdd'.$i.'smart'] = '';
 				
-				$this->infos['hdd'.$i.'temp'] = explode("/", $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion))[0];
+				$this->infos['hdd'.$i.'temp'] = round(explode(" ",explode("/", $this->execSNMP($IPaddress, $community, $oidHDDTemp.$i, $snmpVersion))[0])[0]);
 				$this->infos['hdd'.$i.'smart'] = $this->execSNMP($IPaddress, $community, $oidHDDsmart.$i, $snmpVersion);
 				
 			}
@@ -624,7 +624,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setLogicalId('hdd'.$i.'temp');
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('numeric');
-				$QNAPCmd->setUnite('°C');
+				$QNAPCmd->setUnite('C');
 				$QNAPCmd->save();
 			}
 			
