@@ -613,7 +613,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('poweroff');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
-			QNAPCmd->setOrder('41');
+			$QNAPCmd->setOrder('41');
 			$QNAPCmd->save();
 		}
 	}
