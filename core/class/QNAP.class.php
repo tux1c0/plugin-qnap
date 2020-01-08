@@ -639,7 +639,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
-				$QNAPCmd->setTemplate('dashboard','hddtot');
+				$QNAPCmd->setTemplate('dashboard','hdd1smart');
 				$QNAPCmd->setSubType('string');
 				$QNAPCmd->save();
 			}
