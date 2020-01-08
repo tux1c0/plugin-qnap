@@ -645,7 +645,8 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('numeric');
 				$QNAPCmd->setUnite('C');
-				$QNAPCmd->setOrder(''.$i+12);
+				$j=$i+12;
+				$QNAPCmd->setOrder(''.$j);
 				$QNAPCmd->save();
 			}
 			
