@@ -387,7 +387,7 @@ class QNAP extends eqLogic {
 	
 		/*     * *********************Methode d'instance************************* */
 	public function preSave() {
-		$this->setDisplay("height","800px");
+		$this->setDisplay("height","auto");
     }
 	
 	public function postSave() {
@@ -401,7 +401,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('status');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder(1);
+			//$QNAPCmd->setOrder(1);
 			$QNAPCmd->save();
 		}
 		
