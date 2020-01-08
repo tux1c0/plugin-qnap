@@ -388,6 +388,7 @@ class QNAP extends eqLogic {
 		/*     * *********************Methode d'instance************************* */
 	public function preSave() {
 		$this->setDisplay('height','800');
+		$this->setDisplay('width','400');
     }
 	
 	public function postSave() {
@@ -599,6 +600,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('reboot');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
+			$QNAPCmd->setOrder('40');
 			$QNAPCmd->save();
 		}
 		
@@ -611,6 +613,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('poweroff');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
+			QNAPCmd->setOrder('41');
 			$QNAPCmd->save();
 		}
 	}
