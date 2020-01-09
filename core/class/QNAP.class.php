@@ -428,6 +428,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('cpumodel');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','linux');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('11');
 			$QNAPCmd->save();
@@ -455,6 +456,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('ramtot');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','ram');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('8');
 			$QNAPCmd->save();
@@ -468,6 +470,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('ramused');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','ram');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('9');
 			$QNAPCmd->save();
@@ -495,7 +498,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hddtot');
 			$QNAPCmd->setType('info');
-			$QNAPCmd->setTemplate('dashboard','hddtot');
+			$QNAPCmd->setTemplate('dashboard','hdd');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('6');
 			$QNAPCmd->save();
@@ -523,6 +526,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('os');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','linux');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('12');
 			$QNAPCmd->save();
@@ -536,6 +540,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('model');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','linux');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('10');
 			$QNAPCmd->save();
@@ -549,6 +554,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('nasversion');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','linux');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('15');
 			$QNAPCmd->save();
@@ -659,6 +665,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
+				$QNAPCmd->setTemplate('dashboard','hdd');
 				$QNAPCmd->setSubType('string');
 				$j=$i+40;
 				$QNAPCmd->setOrder(''.$j);
