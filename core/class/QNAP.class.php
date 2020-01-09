@@ -428,7 +428,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('cpumodel');
 			$QNAPCmd->setType('info');
-			$QNAPCmd->setTemplate('dashboard','linux');
+			$QNAPCmd->setTemplate('dashboard','cpu');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('11');
 			$QNAPCmd->save();
@@ -540,7 +540,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('model');
 			$QNAPCmd->setType('info');
-			$QNAPCmd->setTemplate('dashboard','linux');
+			$QNAPCmd->setTemplate('dashboard','pc');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('10');
 			$QNAPCmd->save();
