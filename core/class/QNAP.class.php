@@ -388,7 +388,7 @@ class QNAP extends eqLogic {
 		/*     * *********************Methode d'instance************************* */
 	public function preSave() {
 		$this->setDisplay('height','800');
-		$this->setDisplay('width','400');
+		$this->setDisplay('width','200');
     }
 	
 	public function postSave() {
@@ -402,7 +402,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('status');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('37');
+			$QNAPCmd->setOrder('13');
 			$QNAPCmd->save();
 		}
 		
@@ -416,7 +416,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite( '%' );
-			$QNAPCmd->setOrder('25');
+			$QNAPCmd->setOrder('1');
 			$QNAPCmd->save();
 		}
 		
@@ -429,7 +429,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('cpumodel');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('35');
+			$QNAPCmd->setOrder('11');
 			$QNAPCmd->save();
 		}
 		
@@ -443,7 +443,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite( '%' );
-			$QNAPCmd->setOrder('26');
+			$QNAPCmd->setOrder('2');
 			$QNAPCmd->save();
 		}
 		
@@ -456,7 +456,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('ramtot');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('32');
+			$QNAPCmd->setOrder('8');
 			$QNAPCmd->save();
 		}
 		
@@ -469,7 +469,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('ramused');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('33');
+			$QNAPCmd->setOrder('9');
 			$QNAPCmd->save();
 		}
 		
@@ -483,7 +483,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite( '%' );
-			$QNAPCmd->setOrder('27');
+			$QNAPCmd->setOrder('3');
 			$QNAPCmd->save();
 		}
 		
@@ -497,7 +497,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setTemplate('dashboard','hddtot');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('30');
+			$QNAPCmd->setOrder('6');
 			$QNAPCmd->save();
 		}
 		
@@ -510,7 +510,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('hddfree');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('31');
+			$QNAPCmd->setOrder('7');
 			$QNAPCmd->save();
 		}
 				
@@ -523,7 +523,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('os');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('36');
+			$QNAPCmd->setOrder('12');
 			$QNAPCmd->save();
 		}
 		
@@ -536,7 +536,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('model');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('34');
+			$QNAPCmd->setOrder('10');
 			$QNAPCmd->save();
 		}
 		
@@ -549,7 +549,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('nasversion');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('39');
+			$QNAPCmd->setOrder('15');
 			$QNAPCmd->save();
 		}
 		
@@ -563,7 +563,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite('C');
-			$QNAPCmd->setOrder('28');
+			$QNAPCmd->setOrder('4');
 			$QNAPCmd->save();
 		}
 		
@@ -577,7 +577,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite('C');
-			$QNAPCmd->setOrder('29');
+			$QNAPCmd->setOrder('5');
 			$QNAPCmd->save();
 		}
 		
@@ -590,7 +590,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('uptime');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('38');
+			$QNAPCmd->setOrder('14');
 			$QNAPCmd->save();
 		}
 		
@@ -615,7 +615,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('reboot');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
-			$QNAPCmd->setOrder('40');
+			$QNAPCmd->setOrder('16');
 			$QNAPCmd->save();
 		}
 		
@@ -628,7 +628,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('poweroff');
 			$QNAPCmd->setType('action');
 			$QNAPCmd->setSubType('other');
-			$QNAPCmd->setOrder('41');
+			$QNAPCmd->setOrder('17');
 			$QNAPCmd->save();
 		}
 	}
@@ -645,7 +645,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('numeric');
 				$QNAPCmd->setUnite('C');
-				$j=$i+12;
+				$j=$i+20;
 				$QNAPCmd->setOrder(''.$j);
 				$QNAPCmd->save();
 			}
@@ -659,7 +659,8 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setLogicalId('hdd'.$i.'smart');
 				$QNAPCmd->setType('info');
 				$QNAPCmd->setSubType('string');
-				$QNAPCmd->setOrder(''.$i);
+				$j=$i+40;
+				$QNAPCmd->setOrder(''.$j);
 				$QNAPCmd->save();
 			}
 		}
