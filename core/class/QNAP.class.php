@@ -402,7 +402,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setLogicalId('status');
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('13');
+			$QNAPCmd->setOrder('15');
 			$QNAPCmd->save();
 		}
 		
@@ -556,7 +556,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setType('info');
 			$QNAPCmd->setTemplate('dashboard','linux');
 			$QNAPCmd->setSubType('string');
-			$QNAPCmd->setOrder('15');
+			$QNAPCmd->setOrder('13');
 			$QNAPCmd->save();
 		}
 		
@@ -596,6 +596,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('uptime');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','time');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('14');
 			$QNAPCmd->save();
