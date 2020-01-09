@@ -388,7 +388,7 @@ class QNAP extends eqLogic {
 		/*     * *********************Methode d'instance************************* */
 	public function preSave() {
 		$this->setDisplay('height','800');
-		$this->setDisplay('width','200');
+		//$this->setDisplay('width','200');
     }
 	
 	public function postSave() {
