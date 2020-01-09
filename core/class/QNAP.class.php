@@ -509,6 +509,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('hddfree');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','hdd');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('7');
 			$QNAPCmd->save();
