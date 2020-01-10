@@ -401,6 +401,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('status');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','power');
 			$QNAPCmd->setSubType('string');
 			$QNAPCmd->setOrder('15');
 			$QNAPCmd->save();
