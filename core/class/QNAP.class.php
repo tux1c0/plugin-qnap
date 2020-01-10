@@ -569,6 +569,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('cputemp');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','temp');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite('C');
 			$QNAPCmd->setOrder('4');
@@ -583,6 +584,7 @@ class QNAP extends eqLogic {
 			$QNAPCmd->setEqLogic_id($this->getId());
 			$QNAPCmd->setLogicalId('systemp');
 			$QNAPCmd->setType('info');
+			$QNAPCmd->setTemplate('dashboard','temp');
 			$QNAPCmd->setSubType('numeric');
 			$QNAPCmd->setUnite('C');
 			$QNAPCmd->setOrder('5');
