@@ -652,6 +652,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('hdd'.$i.'temp');
 				$QNAPCmd->setType('info');
+				$QNAPCmd->setTemplate('dashboard','temp');
 				$QNAPCmd->setSubType('numeric');
 				$QNAPCmd->setUnite('C');
 				$j=$i+20;
