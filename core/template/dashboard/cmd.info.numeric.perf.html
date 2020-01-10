@@ -9,11 +9,11 @@
                         cmd.attr('title','Date de valeur : '+_options.valueDate+'<br/>Date de collecte : '+_options.collectDate)
 						if (_options.display_value != '') {
 							if (_options.display_value < 60) {
-								$('perf_#id#').css('color','green');
+								$('#perf_#id#').css('color','green');
 							}else if (_options.display_value >= 60 && _options.display_value <= 80) {
-								$('perf_#id#').css('color','orange');
+								$('#perf_#id#').css('color','orange');
 							}else if (_options.display_value > 80) {
-								$('perf_#id#').css('color','red');
+								$('#perf_#id#').css('color','red');
 							}
 						}
                         cmd.find('.state').empty().append(_options.display_value)
