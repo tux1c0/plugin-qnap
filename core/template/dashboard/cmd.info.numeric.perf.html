@@ -9,7 +9,7 @@
 			cmd.attr('title','Date de valeur : '+_options.valueDate+'<br/>Date de collecte : '+_options.collectDate)
 			if (_options.display_value != '') {
 				if (_options.display_value < 60) {
-					$('.perf_#uid#').css('color','green');
+					$('.perf_#uid#').css({color:green !important});
 				}else if (_options.display_value >= 60 && _options.display_value <= 80) {
 					$('.perf_#uid#').css('color','orange');
 				}else if (_options.display_value > 80) {
