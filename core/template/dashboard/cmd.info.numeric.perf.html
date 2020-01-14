@@ -7,7 +7,17 @@
 		jeedom.cmd.update['#id#'] = function(_options) {
 			var cmd = $('.cmd[data-cmd_id=#id#]')
 			cmd.attr('title','Date de valeur : '+_options.valueDate+'<br/>Date de collecte : '+_options.collectDate)
-			cmd.find('.state').empty().append(_options.display_value)
+			var color = '';
+			if (_options.display_value != '') {
+				if (_options.display_value < 60) {
+					color = 'style="color:green !important"';
+				}else if (_options.display_value >= 60 && _options.display_value <= 80) {
+					color = 'style="color:orange !important"';
+				}else if (_options.display_value > 80) {
+					color = 'style="color:red !important"';
+				}
+			}
+			cmd.find('.state').empty().append('<span '+color+'>'+_options.display_value+'</span>')
 			if(_options.alertLevel){
 					if(_options.alertLevel == 'warning'){
 							cmd.addClass('label label-warning')
@@ -21,17 +31,6 @@
 					}
 			}
 		}
-		jeedom.cmd.update['#id#']({display_value:'<span class="perf_#uid#">#state#</span>',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'})
-		jeedom.cmd.update['#id#'] = function(_options) {
-			if (_options.display_value != '') {
-				if (_options.display_value < 60) {
-					$('.perf_#uid#').css('color','green');
-				}else if (_options.display_value >= 60 && _options.display_value <= 80) {
-					$('.perf_#uid#').css('color','orange');
-				}else if (_options.display_value > 80) {
-					$('.perf_#uid#').css('color','red');
-				}
-			}
-		}
+		jeedom.cmd.update['#id#']({display_value:'#state#',valueDate:'#valueDate#',collectDate:'#collectDate#',alertLevel:'#alertLevel#'})
     </script>
 </div>
