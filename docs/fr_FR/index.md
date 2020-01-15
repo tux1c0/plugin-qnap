@@ -12,9 +12,9 @@ Les informations supervisées
 Installationn 
 ===
 
-Le plugin, une fois installé, doit être activé. Il installera les dépéndances nécessaires au bon fonctionnement.
-Le plugin est compatible Debian 9/10, Jeedom v3/v4.
-Sur Debian 8, des problèmes de dépendances sont bloquants pour le bon fonctionnement du plugin (erreur 500). Il n'y a pas de solution à date. 
+-	Le plugin, une fois installé, doit être activé. Il installera les dépéndances nécessaires au bon fonctionnement.
+-	Le plugin est compatible Debian 9/10, Jeedom v3/v4.
+-	Sur Debian 8, des problèmes de dépendances sont bloquants pour le bon fonctionnement du plugin (erreur 500). Il n'y a pas de solution à date. 
 
 
 Configuration
