@@ -717,7 +717,7 @@ class QNAP extends eqLogic {
 				$QNAPCmd->setEqLogic_id($this->getId());
 				$QNAPCmd->setLogicalId('fan'.$i.'speed');
 				$QNAPCmd->setType('info');
-				$QNAPCmd->setTemplate('dashboard','qnap-temp');
+				$QNAPCmd->setTemplate('dashboard','qnap-speed');
 				$QNAPCmd->setSubType('numeric');
 				$QNAPCmd->setUnite('RPM');
 				$j=$i+60;
