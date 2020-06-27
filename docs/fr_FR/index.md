@@ -67,3 +67,4 @@ Changelog
 
 -	25/08/2019 : Ajout du changelog, passage v4, bugfixes, nouvelle branche pour la v3
 -	14/01/2020 : Bugfix, correction cron, passage au widget v4, évolution de données en numerique, revue mise à jour des tuiles, compatibilité Debian 10
+-	24/06/2020 : Update des templates (bug en 4.1, override de template similaires, ajout vitesse des ventilateurs)
